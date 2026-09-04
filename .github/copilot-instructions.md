@@ -26,6 +26,7 @@ Blazor WebAssembly (MudBlazor) · Keycloak · Docker/Aspire · FluentValidation 
 - Löschen ist immer Soft-Delete, kein physisches Entfernen.
 - Component-Mutationen laufen über `Asset` mit `targetComponentId`-Parameter,
   nie direkt am `Component`.
+- Die Web-App soll zwingend als WASM + PWA betrieben werden; Service Worker darf nicht dauerhaft deaktiviert/unregistriert werden.
 
 ## Quellcode-Qualitätsstandards
 - Definiere Quellcode-Qualitätsstandards, die Verstöße direkt in IDE und Compiler sichtbar machen. 

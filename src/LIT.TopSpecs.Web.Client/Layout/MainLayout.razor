@@ -1,6 +1,6 @@
-﻿@inherits LayoutComponentBase
+@inherits LayoutComponentBase
 
-<MudThemeProvider Theme="_theme" />
+<MudThemeProvider />
 <MudPopoverProvider />
 <MudDialogProvider />
 <MudSnackbarProvider />
@@ -10,9 +10,6 @@
         <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="ToggleDrawer" />
         <MudText Typo="Typo.h6">TopSpecs</MudText>
         <MudSpacer />
-        <MudButton Variant="Variant.Text" Color="Color.Inherit" Href="https://learn.microsoft.com/aspnet/core/blazor" Target="_blank">
-            Blazor
-        </MudButton>
     </MudAppBar>
 
     <MudDrawer @bind-Open="_drawerOpen" Variant="DrawerVariant.Responsive" Breakpoint="Breakpoint.Md" ClipMode="DrawerClipMode.Always" Elevation="1" Width="260px">
@@ -28,21 +25,6 @@
 
 @code {
     private bool _drawerOpen = true;
-
-    private readonly MudTheme _theme = new()
-    {
-        PaletteLight = new PaletteLight
-        {
-            Primary = Colors.Blue.Default,
-            Secondary = Colors.Indigo.Default,
-            Background = Colors.Gray.Lighten5,
-            AppbarBackground = Colors.Shades.White
-        },
-        LayoutProperties = new LayoutProperties
-        {
-            DefaultBorderRadius = "10px"
-        }
-    };
 
     private void ToggleDrawer()
     {
