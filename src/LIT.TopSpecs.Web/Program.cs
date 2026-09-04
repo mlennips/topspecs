@@ -1,5 +1,6 @@
 using LIT.TopSpecs.Aspire.Web;
-using LIT.TopSpecs.Aspire.Web.Components;
+using LIT.TopSpecs.Web.Components;
+using LIT.TopSpecs.Web.Client;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,7 +9,7 @@ builder.AddServiceDefaults();
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
-    .AddInteractiveServerComponents();
+    .AddInteractiveWebAssemblyComponents();
 
 builder.Services.AddOutputCache();
 
@@ -37,7 +38,8 @@ app.UseOutputCache();
 app.MapStaticAssets();
 
 app.MapRazorComponents<App>()
-    .AddInteractiveServerRenderMode();
+    .AddInteractiveWebAssemblyRenderMode()
+    .AddAdditionalAssemblies(typeof(ClientAssemblyMarker).Assembly);
 
 app.MapDefaultEndpoints();
 

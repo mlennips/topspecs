@@ -1,9 +1,9 @@
 var builder = DistributedApplication.CreateBuilder(args);
 
-var apiService = builder.AddProject<Projects.LIT_TopSpecs_Aspire_ApiService>("apiservice")
+var apiService = builder.AddProject<Projects.LIT_TopSpecs_ApiService>("apiservice")
     .WithHttpHealthCheck("/health");
 
-builder.AddProject<Projects.LIT_TopSpecs_Aspire_Web>("webfrontend")
+builder.AddProject<Projects.LIT_TopSpecs_Web>("webfrontend")
     .WithExternalHttpEndpoints()
     .WithHttpHealthCheck("/health")
     .WithReference(apiService)

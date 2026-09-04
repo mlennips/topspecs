@@ -7,8 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\LIT.TopSpecs.ApiService\LIT.TopSpecs.Aspire.ApiService.csproj" />
-    <ProjectReference Include="..\LIT.TopSpecs.Web\LIT.TopSpecs.Aspire.Web.csproj" />
+    <ProjectReference Include="..\LIT.TopSpecs.ApiService\LIT.TopSpecs.ApiService.csproj" />
+    <ProjectReference Include="..\LIT.TopSpecs.Web\LIT.TopSpecs.Web.csproj" />
   </ItemGroup>
 
 </Project>
