@@ -27,4 +27,7 @@ Blazor WebAssembly (MudBlazor) · Keycloak · Docker/Aspire · FluentValidation 
 - Component-Mutationen laufen über `Asset` mit `targetComponentId`-Parameter,
   nie direkt am `Component`.
 
+## Quellcode-Qualitätsstandards
+- Definiere Quellcode-Qualitätsstandards, die Verstöße direkt in IDE und Compiler sichtbar machen. 
+
 Details, Domänenmodell, ADRs: siehe `docs/TopSpecs-arc42-V1.md`.
