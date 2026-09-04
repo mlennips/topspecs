@@ -1,6 +1,6 @@
 # TopSpecs – Architekturdokumentation (arc42)
 
-**Version: V1**
+**Version: V1.1**
 
 ---
 
@@ -78,7 +78,9 @@ Kernfähigkeiten:
 - Backend: **.NET / C#** (Primary Constructors, Records, init-only Properties)
 - **ASP.NET Core** (Minimal APIs, OpenAPI)
 - **Entity Framework Core** mit **PostgreSQL**, dynamische Specs via **JSONB**
-- Frontend: **Angular**
+- Frontend: **Blazor WebAssembly** mit **MudBlazor** (Komponenten-Bibliothek,
+  MIT-lizenziert – kompatibel mit AGPLv3, keine Copyleft-Pflicht bei
+  NuGet-Abhängigkeiten)
 - Auth: **Keycloak**
 - Deployment: **Docker / .NET Aspire**
 
@@ -130,7 +132,7 @@ Kernfähigkeiten:
 ### 3.2 Technischer Kontext
 
 ```
-Angular SPA ──HTTPS/REST/JSON──▶ ASP.NET Core API ──EF Core──▶ PostgreSQL (JSONB)
+Blazor WASM (MudBlazor) ──HTTPS/REST/JSON──▶ ASP.NET Core API ──EF Core──▶ PostgreSQL (JSONB)
                                         │
                                    Keycloak (OIDC) – Authentifizierung Web-UI
 
@@ -162,7 +164,7 @@ Anonymer Client (ShareLink-Aufruf) ──HTTPS──▶ öffentlicher API-Endpun
 /src
   /1-Presentation
     TopSpecs.Api               (ASP.NET Core: Endpunkte, Keycloak-Auth, Mapping)
-    TopSpecs.Web                (Angular SPA)
+    TopSpecs.Web                (Blazor WebAssembly, MudBlazor)
     TopSpecs.Mcp                 (geplant, nicht ausdetailliert – MCP-Tools,
                                    Auth über ShareLink-Token statt eigenem API-Key)
   /2-Core
@@ -705,7 +707,8 @@ eine schreibgeschützte Snapshot.
 ```
 .NET Aspire AppHost
 ├─ TopSpecs.Api          (Container/Prozess)
-├─ TopSpecs.Web           (statisch ausgeliefert oder eigener Container)
+├─ TopSpecs.Web           (Blazor WASM, nativ via AddProject&lt;&gt; orchestriert –
+│                           kein separater JS-Prozess wie bei einer SPA)
 ├─ PostgreSQL               (Container lokal, verwalteter Dienst in Produktion)
 ├─ Keycloak                  (Container, OIDC-Provider)
 └─ ServiceDefaults            (OpenTelemetry, Health Checks – einheitlich)
@@ -864,6 +867,7 @@ Status-Strings.
 | 31 | Automatische Befüllung von `AuditInfo` über EF-Core-`SaveChangesInterceptor`, nicht manuell in Handlern | Konsistent garantiert, kein Vergessen möglich; Infrastructure-Zuständigkeit, keine Domain-/UseCases-Logik nötig | Manuelles Setzen in jedem Command-Handler (fehleranfällig, Wiederholung) |
 | 32 | Optimistic-Concurrency-Token über PostgreSQL-`xmin`, keine eigene Domain-Property | Native Npgsql-Unterstützung, reine Infrastructure-Konfiguration; Nebenläufigkeit ist kein Domänenkonzept | Eigenes `RowVersion`-Property auf `EntityBase` (unnötige Domain-Verunreinigung mit technischem Detail) |
 | 33 | Soft-Delete (`DeletedAt`/`DeletedBy`) als dritter Wertepaar in `AuditInfo`, nicht separates Konzept | Fachlich dasselbe Muster wie Created/Updated (Zeitpunkt + Nutzer); ein zusammengehöriges ValueObject statt verstreuter Felder | Separates `SoftDeleteInfo`-ValueObject oder lose Properties direkt auf `EntityBase` |
+| 34 | Frontend: Blazor WebAssembly mit MudBlazor statt Angular | Native Aspire-Integration (`AddProject<>()`, kein separater npm-Prozess wie bei der Angular-Integration erlebt); direkte Typteilung mit `Domain`/`UseCases` (`AssetId`, `Ownership`, Validatoren); ein Sprach-/Tooling-Stack für Solo-Entwickler; MudBlazor MIT-lizenziert, kompatibel mit AGPLv3 | Angular (ursprüngliche Wahl, aber Aspire-Integration manuell/reibungsvoll, kein Type-Sharing mit Backend); React (dieselben Nachteile wie Angular) |
 
 ---
 
@@ -902,6 +906,7 @@ Qualität
 | Ein Token für Web-Ansicht **und** MCP-Zugriff (geplant) | Geleakter Token gewährt nicht nur Lesezugriff auf eine Seite, sondern eine abfragbare Schnittstelle | Bei Detailplanung erneut bewerten – ggf. getrennte Scopes/Berechtigungen pro Token statt vollständiger Wiederverwendung |
 | `AssetRelationship` erlaubt auch Component↔Component | Größere Kombinationsvielfalt als ursprünglich angedacht – potenziell unübersichtliche Beziehungsnetze bei vielen Einträgen | Bewusst in Kauf genommen (ADR #16); bei Bedarf später UI-seitig filtern/visualisieren, keine Domain-Änderung nötig |
 | Mehrpunktige/strukturierte Spec-Werte (z. B. Fan-Kurven) nur als Freitext | Nicht auswertbar/nicht abfragbar über JSONB-Operatoren | Bewusst vertagt (ADR #27/#28); bei echtem Bedarf strukturiertes Format nachrüsten |
+| Blazor-WASM-Ladezeit (.NET-Laufzeit im Browser) | Höheres initiales Ladegewicht als bei einer SPA – relevant für die authentifizierte Haupt-UI | Bewusst in Kauf genommen (ADR #34): betrifft nur die Haupt-App (einmalig, du bist ohnehin eingeloggt), nicht die ShareLink-Ausgabe (läuft serverseitig über die Api, siehe 6.4) |
 | Einzelentwickler | Bus-Faktor 1 | Architektur konventionell/dokumentiert halten (arc42, AGENTS.md, my-voice.md) |
 
 ---

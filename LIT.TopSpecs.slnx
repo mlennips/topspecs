@@ -1,0 +1,19 @@
+<Solution>
+  <Folder Name="/1. Presentation/">
+    <Project Path="src/LIT.TopSpecs.ApiService/LIT.TopSpecs.Aspire.ApiService.csproj" />
+    <Project Path="src/LIT.TopSpecs.Web/LIT.TopSpecs.Aspire.Web.csproj" />
+  </Folder>
+  <Folder Name="/2. Application/">
+    <Project Path="src/LIT.TopSpecs.Domain/LIT.TopSpecs.Domain.csproj" Id="b74bba51-b36b-4480-ab9b-a6f530f33543" />
+    <Project Path="src/LIT.TopSpecs.SharedKernel/LIT.TopSpecs.SharedKernel.csproj" Id="73406a08-7127-4194-8be6-ab10d12355db" />
+    <Project Path="src/LIT.TopSpecs.UseCases/LIT.TopSpecs.UseCases.csproj" Id="81b9f1fd-9743-4028-b067-319009684118" />
+  </Folder>
+  <Folder Name="/3. Infrastructure/">
+    <Project Path="src/LIT.TopSpecs.Infrastructure/LIT.TopSpecs.Infrastructure.csproj" Id="45d4f95a-1113-4911-a7c9-c2fd9d5ba034" />
+  </Folder>
+  <Folder Name="/4. Aspire/">
+    <Project Path="src/LIT.TopSpecs.Aspire.AppHost/LIT.TopSpecs.Aspire.AppHost.csproj" Id="862e37f5-e739-483f-a09c-d808d630c759" />
+    <Project Path="src/LIT.TopSpecs.Aspire.ServiceDefaults/LIT.TopSpecs.Aspire.ServiceDefaults.csproj" />
+  </Folder>
+  <Folder Name="/9. Test/" />
+</Solution>

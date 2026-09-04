@@ -8,7 +8,7 @@ siehe `docs/TopSpecs-arc42-V1.md` (verbindlich, wird bei Architektur-Änderungen
 zuerst aktualisiert).
 
 ## Tech-Stack
-.NET · ASP.NET Core Minimal APIs · EF Core + PostgreSQL (JSONB) · Angular ·
+.NET · ASP.NET Core Minimal APIs · EF Core + PostgreSQL (JSONB) · Blazor WebAssembly (MudBlazor) ·
 Keycloak · Docker/Aspire · FluentValidation · MediatR
 
 ## Architektur-Regeln (verbindlich)

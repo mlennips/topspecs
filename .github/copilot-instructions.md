@@ -7,7 +7,7 @@ diese Datei nur nachziehen.
 ## Kurzfassung (Fallback, falls der Include oben nicht aufgelöst wird)
 
 **Tech-Stack:** .NET · ASP.NET Core Minimal APIs · EF Core + PostgreSQL (JSONB) ·
-Angular · Keycloak · Docker/Aspire · FluentValidation · MediatR
+Blazor WebAssembly (MudBlazor) · Keycloak · Docker/Aspire · FluentValidation · MediatR
 
 **Architektur-Regeln:**
 - Schichten: `Presentation → Infrastructure → UseCases/Domain → SharedKernel`.

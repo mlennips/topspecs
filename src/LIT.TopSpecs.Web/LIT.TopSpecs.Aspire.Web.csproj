@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\LIT.TopSpecs.Aspire.ServiceDefaults\LIT.TopSpecs.Aspire.ServiceDefaults.csproj" />
+    <ProjectReference Include="..\LIT.TopSpecs.SharedKernel\LIT.TopSpecs.SharedKernel.csproj" />
+  </ItemGroup>
+
+</Project>
