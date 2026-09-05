@@ -1,0 +1,216 @@
+﻿@page "/"
+
+<PageTitle>TopSpecs</PageTitle>
+
+<div class="min-vh-100">
+    <section class="hero-section text-white py-5 position-relative overflow-hidden">
+        <div class="container">
+            <div class="row align-items-center" style="min-height: 50vh;">
+                <div class="col-12 col-lg-7">
+                    <h1 class="display-4 fw-bold mb-3 text-white hero-title">
+                        Alles zu deinen Dingen. An einem Ort.
+                    </h1>
+                    <p class="fs-5 mb-4 text-white opacity-90">
+                        Ob Fahrrad, Solaranlage oder Computer: Behalte wichtige Infos übersichtlich im Blick –
+                        und nutze sie direkt für Fragen an ChatGPT, Copilot & Co.
+                    </p>
+                    <div class="d-flex gap-3 flex-wrap">
+                        <a class="btn btn-light btn-lg px-4 fw-semibold" href="/weather">Kostenlos starten</a>
+                        <a class="btn btn-outline-light btn-lg px-4 fw-semibold border-2" href="/counter">So funktioniert's</a>
+                    </div>
+                </div>
+                <div class="col-lg-5 d-none d-lg-flex justify-content-center align-items-center">
+                    <div class="bubble-animation position-relative" style="width: 350px; height: 350px;">
+                        <div class="bubble bubble-1"></div>
+                        <div class="bubble bubble-2"></div>
+                        <div class="bubble bubble-3"></div>
+                        <div class="bubble bubble-4"></div>
+                        <div class="bubble bubble-5"></div>
+                        <div class="bubble bubble-6"></div>
+                        <div class="bubble bubble-7"></div>
+                        <div class="bubble bubble-8"></div>
+                        <div class="bubble bubble-9"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="stats-section py-5">
+        <div class="container">
+            <div class="text-center mb-4">
+                <p class="text-uppercase text-muted fw-semibold small mb-2">Passt für deinen Alltag</p>
+            </div>
+            <div class="row g-3 justify-content-center">
+                @foreach (var stat in Stats)
+                {
+                    <div class="col-12 col-sm-6 col-lg-3">
+                        <div class="stat-item d-flex align-items-center gap-3">
+                            <div class="stat-icon d-flex align-items-center justify-content-center">
+                                <MudIcon Icon="@stat.Icon" Size="Size.Medium" Color="Color.Primary" />
+                            </div>
+                            <div>
+                                <div class="stat-label text-dark">@stat.Label</div>
+                                <div class="stat-subtitle text-muted">@stat.Subtitle</div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </section>
+
+    <section class="py-5 bg-white">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h2 class="display-5 fw-bold text-dark">Was bringt dir TopSpecs im Alltag?</h2>
+                <p class="lead text-muted">Klare Infos, weniger Suchen, schneller teilen – genau dann, wenn es darauf ankommt.</p>
+            </div>
+
+            <div class="row g-4">
+                @foreach (var feature in Features)
+                {
+                    <div class="col-12 col-md-6 col-lg-4">
+                        <div class="card h-100 border shadow-sm rounded-3">
+                            <div class="card-body text-center">
+                                <div class="icon-duotone mb-3 mx-auto d-flex align-items-center justify-content-center">
+                                    <MudIcon Icon="@feature.Icon" Size="Size.Large" Color="Color.Primary" />
+                                </div>
+                                <h3 class="h5 card-title text-dark">@feature.Title</h3>
+                                <p class="card-text text-muted">@feature.Description</p>
+                                <a href="@feature.Link" class="btn btn-link text-decoration-none text-primary fw-semibold">Mehr erfahren</a>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </section>
+
+    <section class="py-5 bg-white">
+        <div class="container">
+            <div class="card border-0 shadow-sm rounded-3">
+                <div class="card-body p-4 p-lg-5">
+                    <div class="row g-4 align-items-start">
+                        <div class="col-lg-5">
+                            <h2 class="h3 fw-bold text-dark mb-3">Mit KI arbeiten – ohne Technikballast</h2>
+                            <p class="text-muted mb-0">
+                                TopSpecs bereitet deine Inhalte so auf, dass du sie sofort in KI-Tools verwenden kannst.
+                                Für schnelle Antworten, bessere Empfehlungen und weniger Rückfragen.
+                            </p>
+                        </div>
+                        <div class="col-lg-7">
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <div class="p-3 rounded-3 border h-100">
+                                        <h3 class="h6 fw-semibold text-dark mb-2">KI-Links</h3>
+                                        <p class="small text-muted mb-0">Speichere wiederkehrende Fragen als Link – ein Klick, alles ist vorbereitet.</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="p-3 rounded-3 border h-100">
+                                        <h3 class="h6 fw-semibold text-dark mb-2">MCP-Anbindung</h3>
+                                        <p class="small text-muted mb-0">Verbinde deine Daten mit KI-Assistenten, damit relevante Infos direkt verfügbar sind.</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="p-3 rounded-3 border h-100">
+                                        <h3 class="h6 fw-semibold text-dark mb-2">Sofort nutzbar</h3>
+                                        <p class="small text-muted mb-0">Keine langen Vorbereitungen: kopieren, teilen und direkt mit der KI arbeiten.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="how-it-works-section py-5">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h2 class="display-5 fw-bold text-dark">So funktioniert TopSpecs</h2>
+                <p class="lead text-muted">Einmal sauber erfassen – danach für Fragen, Service und KI direkt nutzbar.</p>
+            </div>
+
+            <div class="row g-4 align-items-stretch">
+                <div class="col-lg-3 col-md-6">
+                    <div class="card h-100 border shadow-sm rounded-3">
+                        <div class="card-body text-center p-4">
+                            <div class="display-1 fw-bold text-primary mb-3">1</div>
+                            <h3 class="h5 mb-3 fw-semibold text-dark">Bereich anlegen</h3>
+                            <p class="text-muted">Lege zuerst einen Bereich an, z. B. Fahrrad, Solaranlage oder Computer.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-3 col-md-6">
+                    <div class="card h-100 border shadow-sm rounded-3">
+                        <div class="card-body text-center p-4">
+                            <div class="display-1 fw-bold text-primary mb-3">2</div>
+                            <h3 class="h5 mb-3 fw-semibold text-dark">Item erfassen</h3>
+                            <p class="text-muted">Trage Details, Belege und Notizen ein – alles bleibt zentral und auffindbar.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-3 col-md-6">
+                    <div class="card h-100 border shadow-sm rounded-3">
+                        <div class="card-body text-center p-4">
+                            <div class="display-1 fw-bold text-primary mb-3">3</div>
+                            <h3 class="h5 mb-3 fw-semibold text-dark">Ausgabe erstellen</h3>
+                            <p class="text-muted">Erzeuge eine KI-taugliche Zusammenfassung oder einen smarten Link für wiederkehrende Fragen.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-3 col-md-6">
+                    <div class="card h-100 border shadow-sm rounded-3">
+                        <div class="card-body text-center p-4">
+                            <div class="display-1 fw-bold text-primary mb-3">4</div>
+                            <h3 class="h5 mb-3 fw-semibold text-dark">Direkt nutzen</h3>
+                            <p class="text-muted">Teile die Infos mit Werkstatt oder Beratung – oder füge sie direkt in ChatGPT/Copilot ein.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="cta-section text-white py-5">
+        <div class="container py-5">
+            <div class="text-center">
+                <h2 class="display-5 fw-bold mb-4">Mehr Überblick, weniger Suchen</h2>
+                <p class="lead mb-4 opacity-90">
+                    Starte jetzt kostenlos und bring Ordnung in alles, was dir wichtig ist.
+                </p>
+                <a class="btn btn-light btn-lg px-5 fw-semibold" href="/weather">Jetzt kostenlos starten</a>
+            </div>
+        </div>
+    </section>
+</div>
+
+
+@code {
+    private static readonly FeatureItem[] Features =
+    [
+        new(Icons.Material.Filled.Category, "Eigene Kategorien anlegen", "Lege Bereiche wie Fahrrad, Solaranlage oder Computer an – passend zu deinem Alltag.", "/"),
+        new(Icons.Material.Filled.EditNote, "Wichtige Details festhalten", "Sammle Daten, Belege und Notizen zentral, damit nichts verloren geht.", "/"),
+        new(Icons.Material.Filled.Summarize, "KI-Zusammenfassungen auf Knopfdruck", "Erstelle eine klare Übersicht, die ChatGPT, Copilot & Co. sofort verstehen.", "/counter"),
+        new(Icons.Material.Filled.Link, "Persönliche KI-Links", "Speichere wiederkehrende Fragen als smarte Links – ein Klick und alles ist vorbereitet.", "/weather"),
+        new(Icons.Material.Filled.Hub, "MCP-Anbindung", "Verbinde TopSpecs mit KI-Tools, damit deine Infos dort ankommen, wo du sie brauchst.", "/"),
+        new(Icons.Material.Filled.Handyman, "Besser vorbereitet für Service", "Bei Reparaturen oder Support hast du alle relevanten Infos sofort zur Hand.", "/")
+    ];
+
+    private static readonly StatItem[] Stats =
+    [
+        new(Icons.Material.Filled.Verified, "Garantiefälle", "Nachweise direkt griffbereit"),
+        new(Icons.Material.Filled.Handyman, "Reparaturen", "Wichtige Details sofort parat"),
+        new(Icons.Material.Filled.Sell, "Verkauf", "Infos klar und vertrauenswürdig teilen"),
+        new(Icons.Material.Filled.SupportAgent, "Beratung", "Fragen schneller und gezielter stellen")
+    ];
+
+    private sealed record FeatureItem(string Icon, string Title, string Description, string Link);
+    private sealed record StatItem(string Icon, string Label, string Subtitle);
+}

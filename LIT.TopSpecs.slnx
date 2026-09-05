@@ -16,4 +16,7 @@
     <Project Path="src/LIT.TopSpecs.Aspire.ServiceDefaults/LIT.TopSpecs.Aspire.ServiceDefaults.csproj" />
   </Folder>
   <Folder Name="/9. Test/" />
+  <Folder Name="/src/">
+    <Project Path="src/LIT.TopSpecs.Web.Client/LIT.TopSpecs.Web.Client.csproj" />
+  </Folder>
 </Solution>
