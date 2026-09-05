@@ -1,7 +1,7 @@
 <Solution>
   <Folder Name="/1. Presentation/">
     <Project Path="src/LIT.TopSpecs.ApiService/LIT.TopSpecs.ApiService.csproj" />
-    <Project Path="src/LIT.TopSpecs.Web/LIT.TopSpecs.Web.csproj" />
+    <Project Path="src/LIT.TopSpecs.WebApp/LIT.TopSpecs.WebApp.csproj" />
   </Folder>
   <Folder Name="/2. Application/">
     <Project Path="src/LIT.TopSpecs.Domain/LIT.TopSpecs.Domain.csproj" Id="b74bba51-b36b-4480-ab9b-a6f530f33543" />
@@ -14,9 +14,5 @@
   <Folder Name="/4. Aspire/">
     <Project Path="src/LIT.TopSpecs.Aspire.AppHost/LIT.TopSpecs.Aspire.AppHost.csproj" Id="862e37f5-e739-483f-a09c-d808d630c759" />
     <Project Path="src/LIT.TopSpecs.Aspire.ServiceDefaults/LIT.TopSpecs.Aspire.ServiceDefaults.csproj" />
-  </Folder>
-  <Folder Name="/9. Test/" />
-  <Folder Name="/src/">
-    <Project Path="src/LIT.TopSpecs.Web.Client/LIT.TopSpecs.Web.Client.csproj" />
   </Folder>
 </Solution>

@@ -1,4 +1,4 @@
-<Project Sdk="Aspire.AppHost.Sdk/13.5.3">
+﻿<Project Sdk="Aspire.AppHost.Sdk/13.5.3">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -8,7 +8,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\LIT.TopSpecs.ApiService\LIT.TopSpecs.ApiService.csproj" />
-    <ProjectReference Include="..\LIT.TopSpecs.Web\LIT.TopSpecs.Web.csproj" />
+    <ProjectReference Include="..\LIT.TopSpecs.WebApp\LIT.TopSpecs.WebApp.csproj" />
   </ItemGroup>
 
 </Project>

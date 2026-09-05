@@ -1,0 +1,52 @@
+.bubble-animation {
+    position: relative;
+    width: 350px;
+    height: 350px;
+}
+
+.bubble {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(8px);
+    border: 2px solid rgba(255, 255, 255, 0.35);
+    animation: bubbleFloat var(--duration, 10s) ease-in-out infinite;
+    will-change: transform, opacity;
+}
+
+.bubble-1 { width: 150px; height: 150px; top: 20%; left: 10%; animation-delay: 0s; --duration: 11s; }
+.bubble-2 { width: 100px; height: 100px; top: 50%; left: 50%; animation-delay: 1.5s; --duration: 9s; }
+.bubble-3 { width: 80px; height: 80px; top: 10%; right: 15%; animation-delay: 3s; --duration: 12s; }
+.bubble-4 { width: 120px; height: 120px; bottom: 20%; left: 30%; animation-delay: 4.5s; --duration: 10s; }
+.bubble-5 { width: 90px; height: 90px; bottom: 30%; right: 10%; animation-delay: 6s; --duration: 13s; }
+.bubble-6 { width: 70px; height: 70px; top: 35%; left: 5%; animation-delay: 2s; --duration: 8.5s; }
+.bubble-7 { width: 95px; height: 95px; top: 60%; right: 25%; animation-delay: 5s; --duration: 11.5s; }
+.bubble-8 { width: 65px; height: 65px; bottom: 15%; right: 35%; animation-delay: 3.5s; --duration: 9.5s; }
+.bubble-9 { width: 75px; height: 75px; top: 70%; left: 60%; animation-delay: 1s; --duration: 12.5s; }
+
+@keyframes bubbleFloat {
+    0% {
+        transform: translate3d(0, 0, 0) scale(1) rotate(0deg);
+        opacity: 0.78;
+    }
+
+    25% {
+        transform: translate3d(10px, -9px, 0) scale(1.03) rotate(1deg);
+        opacity: 0.92;
+    }
+
+    50% {
+        transform: translate3d(-8px, -18px, 0) scale(1.01) rotate(-1deg);
+        opacity: 1;
+    }
+
+    75% {
+        transform: translate3d(-10px, -9px, 0) scale(0.99) rotate(1deg);
+        opacity: 0.9;
+    }
+
+    100% {
+        transform: translate3d(0, 0, 0) scale(1) rotate(0deg);
+        opacity: 0.78;
+    }
+}
