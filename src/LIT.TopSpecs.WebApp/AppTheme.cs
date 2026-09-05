@@ -8,9 +8,8 @@ public static class AppTheme
     {
         PaletteLight = new PaletteLight()
         {
-            // LIGHT (Aspire-inspiriert, aber hell)
-            Primary = "#7A5AF8",         // Aspire-Violett
-            Secondary = "#647087",       // gedämpftes Blaugrau
+            Primary = "#2f5787",         
+            Secondary = "#647087",       
             Tertiary = "#71717A",
             Background = "#FAFAFA",
             Surface = "#FFFFFF",
@@ -32,12 +31,11 @@ public static class AppTheme
 
         PaletteDark = new PaletteDark()
         {
-            // DARK (Aspire-Dashboard-Look): einheitliches, sehr dunkles Blau ueber AppBar, Drawer und Main-Bereich
-            Primary = "#9B7BFF",         // helles Violett als Akzent, wie im Aspire-Dashboard
+            Primary = "#2f5787",
             Secondary = "#8A96AC",
             Tertiary = "#94A3B8",
-            Background = "#221e2d",      // sehr dunkles Blau, durchgaengig fuer Main-Bereich
-            Surface = "#1B2140",         // etwas hellere Flaeche fuer Cards/Paper
+            Background = "#221e2d",
+            Surface = "#2d2937",
             AppbarBackground = "#111",
             AppbarText = "#F3F2F1",
             DrawerBackground = "#111",
@@ -45,7 +43,7 @@ public static class AppTheme
             DrawerIcon = "#C8C6C4",
             TextPrimary = "#F3F2F1",
             TextSecondary = "#C8C6C4",
-            LinesDefault = "#262B4A",    // dezente, blau abgestimmte Trennlinie statt Grau
+            LinesDefault = "#262B4A",
             TableLines = "#262B4A",
             Divider = "#262B4A",
             Success = "#6EAF88",
