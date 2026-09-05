@@ -11,8 +11,8 @@
                     Alles zu deinen Dingen. An einem Ort.
                 </MudText>
                 <MudText Typo="Typo.body1" Class="mb-6" Style="color: white;">
-                    Ob Fahrrad, Solaranlage oder Computer: Behalte wichtige Infos übersichtlich im Blick –
-                    und nutze sie direkt für Fragen an ChatGPT, Copilot &amp; Co.
+                    Verwalte deine Gegenstände, hinterlege Details, Informationen und Messwerte –
+                    und binde sie mit wenigen Klicks an ChatGPT, Copilot &amp; Co. für deine Weiterentwicklung an.
                 </MudText>
                 <MudStack Row="true" Spacing="3">
                     <MudButton Variant="Variant.Filled" Color="Color.Surface" Href="/">Kostenlos starten</MudButton>
@@ -78,8 +78,8 @@
             <MudItem xs="12" lg="5">
                 <MudText Typo="Typo.h5" Class="mb-3">Mit KI arbeiten – ohne Technikballast</MudText>
                 <MudText Typo="Typo.body1" Color="Color.Secondary">
-                    TopSpecs bereitet deine Inhalte so auf, dass du sie sofort in KI-Tools verwenden kannst.
-                    Für schnelle Antworten, bessere Empfehlungen und weniger Rückfragen.
+                    TopSpecs bereitet Details, Informationen und Messwerte deiner Gegenstände so auf, dass du sie
+                    sofort in KI-Tools verwenden kannst – für schnellere Antworten und gezielte Weiterentwicklung.
                 </MudText>
             </MudItem>
             <MudItem xs="12" lg="7">
@@ -154,20 +154,20 @@
 @code {
     private static readonly FeatureItem[] Features =
     [
-        new(Icons.Material.Filled.Category, "Eigene Kategorien anlegen", "Lege Bereiche wie Fahrrad, Solaranlage oder Computer an – passend zu deinem Alltag.", "/"),
-        new(Icons.Material.Filled.EditNote, "Wichtige Details festhalten", "Sammle Daten, Belege und Notizen zentral, damit nichts verloren geht.", "/"),
+        new(Icons.Material.Filled.Inventory2, "Gegenstände verwalten", "Lege alle deine Gegenstände zentral an – vom Fahrrad über die Solaranlage bis zum Computer.", "/"),
+        new(Icons.Material.Filled.EditNote, "Details & Informationen hinterlegen", "Sammle Daten, Belege und Notizen zentral, damit nichts verloren geht.", "/"),
+        new(Icons.Material.Filled.Analytics, "Messwerte speichern", "Erfasse Messwerte und Verläufe, um Zustand und Entwicklung im Blick zu behalten.", "/"),
         new(Icons.Material.Filled.Summarize, "KI-Zusammenfassungen auf Knopfdruck", "Erstelle eine klare Übersicht, die ChatGPT, Copilot & Co. sofort versteht.", "/"),
         new(Icons.Material.Filled.Link, "Persönliche KI-Links", "Speichere wiederkehrende Fragen als smarte Links – ein Klick und alles ist vorbereitet.", "/"),
-        new(Icons.Material.Filled.Hub, "MCP-Anbindung", "Verbinde TopSpecs mit KI-Tools, damit deine Infos dort ankommen, wo du sie brauchst.", "/"),
-        new(Icons.Material.Filled.Handyman, "Besser vorbereitet für Service", "Bei Reparaturen oder Support hast du alle relevanten Infos sofort zur Hand.", "/")
+        new(Icons.Material.Filled.Hub, "Einfache KI-Anbindung", "Verbinde TopSpecs per MCP mit deinen KI-Tools und nutze deine Daten direkt für die Weiterentwicklung.", "/")
     ];
 
     private static readonly StatItem[] Stats =
     [
-        new(Icons.Material.Filled.Verified, "Garantiefälle", "Nachweise direkt griffbereit"),
-        new(Icons.Material.Filled.Handyman, "Reparaturen", "Wichtige Details sofort parat"),
-        new(Icons.Material.Filled.Sell, "Verkauf", "Infos klar und vertrauenswürdig teilen"),
-        new(Icons.Material.Filled.SupportAgent, "Beratung", "Fragen schneller und gezielter stellen")
+        new(Icons.Material.Filled.Inventory2, "Gegenstände", "Zentral verwaltet, jederzeit griffbereit"),
+        new(Icons.Material.Filled.EditNote, "Details & Infos", "Nichts geht mehr verloren"),
+        new(Icons.Material.Filled.Analytics, "Messwerte", "Verläufe und Zustand im Blick"),
+        new(Icons.Material.Filled.Hub, "KI-Anbindung", "Direkt nutzbar für deine Weiterentwicklung")
     ];
 
     private static readonly StepItem[] Steps =
