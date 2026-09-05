@@ -6,72 +6,57 @@ public static class AppTheme
 {
     public static readonly MudTheme Theme = new()
     {
-        PaletteLight = new PaletteLight
+        PaletteLight = new PaletteLight()
         {
-            Primary = "#2563eb",
-            Secondary = "#0ea5e9",
-            Tertiary = "#64748b",
-            Success = "#16a34a",
-            Warning = "#d97706",
-            Error = "#dc2626",
-            Info = "#0284c7",
-
-            Background = "#f4f5f7",
-            Surface = "#ffffff",
-            AppbarBackground = "#ffffff",
-            AppbarText = "#1e293b",
-            DrawerBackground = "#222",
-            DrawerText = "#e2e8f0",
-            DrawerIcon = "#cbd5e1",
-
-            TextPrimary = "#1e293b",
-            TextSecondary = "#64748b",
-            LinesDefault = "#e2e8f0",
-            TableLines = "#e2e8f0",
-            Divider = "#e2e8f0",
+            // LIGHT
+            Primary = "#5B63A6",         // dezentes Indigo/Blau statt grell
+            Secondary = "#647087",       // gedämpftes Blaugrau
+            Tertiary = "#71717A",
+            Background = "#F9FAFB",     // sehr helles Grau
+            Surface = "#FFFFFF",
+            AppbarBackground = "#FFFFFF",
+            AppbarText = "#111827",      // sorgt für Kontrast in der Navbar
+            DrawerBackground = "#111827", // dunkle Sidebar
+            DrawerText = "#E5E7EB",
+            DrawerIcon = "#9CA3AF",
+            TextPrimary = "#111827",
+            TextSecondary = "#6B7280",
+            LinesDefault = "#E5E7EB",
+            TableLines = "#E5E7EB",
+            Divider = "#E5E7EB",
+            Success = "#4C9A6A",
+            Error = "#C7524A",
+            Warning = "#C0863A",
+            Info = "#4A7FA8",
         },
-        PaletteDark = new PaletteDark
+
+        PaletteDark = new PaletteDark()
         {
-            Primary = "#3b82f6",
-            Secondary = "#38bdf8",
-            Tertiary = "#94a3b8",
-            Success = "#22c55e",
-            Warning = "#f59e0b",
-            Error = "#ef4444",
-            Info = "#38bdf8",
+            // DARK
+            Primary = "#8B92C9",         // dezentes, helleres Indigo für Dark-Mode
+            Secondary = "#8A96AC",
+            Tertiary = "#94A3B8",
+            Background = "#020617",      // sehr dunkles Blau/Schwarz
+            Surface = "#0F172A",
+            AppbarBackground = "#020617",
+            AppbarText = "#E5E7EB",
+            DrawerBackground = "#020617",
+            DrawerText = "#E5E7EB",
+            DrawerIcon = "#9CA3AF",
+            TextPrimary = "#F9FAFB",
+            TextSecondary = "#9CA3AF",
+            LinesDefault = "#1F2937",
+            TableLines = "#1F2937",
+            Divider = "#1F2937",
+            Success = "#6EAF88",
+            Error = "#D3766F",
+            Warning = "#D1A15E",
+            Info = "#6D9CC0",
+        },
 
-            Background = "#0f172a",
-            Surface = "#1e293b",
-            AppbarBackground = "#111",
-            AppbarText = "#e2e8f0",
-            DrawerBackground = "#222",
-            DrawerText = "#e2e8f0",
-            DrawerIcon = "#cbd5e1",
-
-            TextPrimary = "#e2e8f0",
-            TextSecondary = "#94a3b8",
-            LinesDefault = "#334155",
-            TableLines = "#334155",
-            Divider = "#334155",
-        },
-        Typography = new Typography
+        LayoutProperties = new LayoutProperties()
         {
-            Default = new DefaultTypography
-            {
-                FontFamily = ["Inter", "Roboto", "Helvetica", "Arial", "sans-serif"],
-                FontWeight = "400",
-            },
-            H1 = new H1Typography { FontFamily = ["Inter", "Roboto", "sans-serif"], FontWeight = "500", FontSize = "2.25rem" },
-            H2 = new H2Typography { FontFamily = ["Inter", "Roboto", "sans-serif"], FontWeight = "500", FontSize = "1.875rem" },
-            H3 = new H3Typography { FontFamily = ["Inter", "Roboto", "sans-serif"], FontWeight = "500", FontSize = "1.5rem" },
-            H4 = new H4Typography { FontFamily = ["Inter", "Roboto", "sans-serif"], FontWeight = "500", FontSize = "1.25rem" },
-            H5 = new H5Typography { FontFamily = ["Inter", "Roboto", "sans-serif"], FontWeight = "500", FontSize = "1.125rem" },
-            H6 = new H6Typography { FontFamily = ["Inter", "Roboto", "sans-serif"], FontWeight = "500", FontSize = "1rem" },
-            Button = new ButtonTypography { FontWeight = "500", FontSize = "0.875rem" },
-        },
-        LayoutProperties = new LayoutProperties
-        {
-            DefaultBorderRadius = "6px",
-        },
+            DefaultBorderRadius = "10px"
+        }
     };
 }
