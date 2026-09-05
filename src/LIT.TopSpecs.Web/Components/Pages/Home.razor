@@ -2,43 +2,169 @@
 
 <PageTitle>TopSpecs</PageTitle>
 
-<MudPaper Elevation="0" Outlined="true" Class="pa-6">
-    <MudStack Spacing="2">
-        <MudChip T="string" Color="Color.Primary" Variant="Variant.Filled" Size="Size.Small">Blazor + MudBlazor</MudChip>
-        <MudText Typo="Typo.h3">Build better specs. Faster.</MudText>
-        <MudText Typo="Typo.subtitle1">
-            TopSpecs kombiniert moderne Blazor-UX mit klaren Workflows für Teams, die technische Qualität messbar verbessern wollen.
-        </MudText>
-        <MudStack Row="true" Spacing="2">
-            <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Large" Href="/weather" StartIcon="@Icons.Material.Filled.PlayArrow">Live Demo</MudButton>
-            <MudButton Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Large" Href="/counter" StartIcon="@Icons.Material.Filled.Bolt">Features</MudButton>
-        </MudStack>
-    </MudStack>
-</MudPaper>
+<div class="min-vh-100">
+    <section class="hero-section text-white py-5 position-relative overflow-hidden">
+        <div class="container">
+            <div class="row align-items-center" style="min-height: 50vh;">
+                <div class="col-12 col-lg-7">
+                    <h1 class="display-4 fw-bold mb-3 text-white hero-title">
+                        Deine Sachen. Übersichtlich dokumentiert.
+                    </h1>
+                    <p class="fs-5 mb-4 text-white opacity-90">
+                        Von Fahrrad bis Solaranlage – behalte alle wichtigen Details im Blick.
+                        Strukturiert in einem Format, das auch mit KI-Assistenten funktioniert.
+                        Für Garantiefälle, Reparaturen oder intelligente Empfehlungen.
+                    </p>
+                    <div class="d-flex gap-3 flex-wrap">
+                        <a class="btn btn-light btn-lg px-4 fw-semibold" href="/weather">Kostenlos starten</a>
+                        <a class="btn btn-outline-light btn-lg px-4 fw-semibold border-2" href="/counter">Mehr erfahren</a>
+                    </div>
+                </div>
+                <div class="col-lg-5 d-none d-lg-flex justify-content-center align-items-center">
+                    <div class="bubble-animation position-relative" style="width: 350px; height: 350px;">
+                        <div class="bubble bubble-1"></div>
+                        <div class="bubble bubble-2"></div>
+                        <div class="bubble bubble-3"></div>
+                        <div class="bubble bubble-4"></div>
+                        <div class="bubble bubble-5"></div>
+                        <div class="bubble bubble-6"></div>
+                        <div class="bubble bubble-7"></div>
+                        <div class="bubble bubble-8"></div>
+                        <div class="bubble bubble-9"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
-<MudGrid Spacing="3" Class="mt-4">
-    <MudItem xs="12" md="4">
-        <MudCard>
-            <MudCardContent>
-                <MudText Typo="Typo.h6">Moderne Architektur</MudText>
-                <MudText Typo="Typo.body2">Interactive WASM mit klarer Trennung von UI, UseCases und Infrastruktur.</MudText>
-            </MudCardContent>
-        </MudCard>
-    </MudItem>
-    <MudItem xs="12" md="4">
-        <MudCard>
-            <MudCardContent>
-                <MudText Typo="Typo.h6">Produktive UI</MudText>
-                <MudText Typo="Typo.body2">Konsistente, responsive Komponenten direkt aus MudBlazor.</MudText>
-            </MudCardContent>
-        </MudCard>
-    </MudItem>
-    <MudItem xs="12" md="4">
-        <MudCard>
-            <MudCardContent>
-                <MudText Typo="Typo.h6">Skalierbarer Betrieb</MudText>
-                <MudText Typo="Typo.body2">Service Defaults und Observability für stabile Deployments.</MudText>
-            </MudCardContent>
-        </MudCard>
-    </MudItem>
-</MudGrid>
+    <section class="stats-section py-5">
+        <div class="container">
+            <div class="row g-4 text-center">
+                @foreach (var stat in Stats)
+                {
+                    <div class="col-6 col-md-3">
+                        <div class="stat-item">
+                            <div class="display-4 fw-bold text-primary">@stat.Value</div>
+                            <div class="text-dark">@stat.Label</div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </section>
+
+    <section class="py-5 bg-white">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h2 class="display-5 fw-bold text-dark">Was kannst du damit machen?</h2>
+                <p class="lead text-muted">Von KI-Integration bis zur perfekten Organisation – hier die Highlights</p>
+            </div>
+
+            <div class="row g-4">
+                @foreach (var feature in Features)
+                {
+                    <div class="col-12 col-md-6 col-lg-4">
+                        <div class="card h-100 border shadow-sm rounded-3">
+                            <div class="card-body text-center">
+                                <div class="icon-duotone mb-3 mx-auto d-flex align-items-center justify-content-center">
+                                    <MudIcon Icon="@feature.Icon" Size="Size.Large" Color="Color.Primary" />
+                                </div>
+                                <h3 class="h5 card-title text-dark">@feature.Title</h3>
+                                <p class="card-text text-muted">@feature.Description</p>
+                                <a href="@feature.Link" class="btn btn-link text-decoration-none text-primary fw-semibold">Mehr erfahren</a>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </section>
+
+    <section class="how-it-works-section py-5">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h2 class="display-5 fw-bold text-dark">So einfach geht's</h2>
+                <p class="lead text-muted">In vier Schritten zur KI-optimierten Dokumentation</p>
+            </div>
+
+            <div class="row g-4 align-items-stretch">
+                <div class="col-lg-3 col-md-6">
+                    <div class="card h-100 border shadow-sm rounded-3">
+                        <div class="card-body text-center p-4">
+                            <div class="display-1 fw-bold text-primary mb-3">1</div>
+                            <h3 class="h5 mb-3 fw-semibold text-dark">Was möchtest du verwalten?</h3>
+                            <p class="text-muted">Fahrräder? Solaranlagen? Computer? Erstelle eine Kategorie für deine Lieblingssachen.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-3 col-md-6">
+                    <div class="card h-100 border shadow-sm rounded-3">
+                        <div class="card-body text-center p-4">
+                            <div class="display-1 fw-bold text-primary mb-3">2</div>
+                            <h3 class="h5 mb-3 fw-semibold text-dark">Trage deine Details ein</h3>
+                            <p class="text-muted">Notiere alle wichtigen Infos – so ausführlich wie du möchtest. Von Kaufdatum bis Seriennummer.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-3 col-md-6">
+                    <div class="card h-100 border shadow-sm rounded-3">
+                        <div class="card-body text-center p-4">
+                            <div class="display-1 fw-bold text-primary mb-3">3</div>
+                            <h3 class="h5 mb-3 fw-semibold text-dark">Exportiere für KI & Co.</h3>
+                            <p class="text-muted">Erstelle mit einem Klick eine strukturierte Zusammenfassung – fertig formatiert für ChatGPT und andere Tools.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-3 col-md-6">
+                    <div class="card h-100 border shadow-sm rounded-3">
+                        <div class="card-body text-center p-4">
+                            <div class="display-1 fw-bold text-primary mb-3">4</div>
+                            <h3 class="h5 mb-3 fw-semibold text-dark">Teile & hole dir Rat</h3>
+                            <p class="text-muted">Frag KI-Assistenten um Rat, teile Infos mit Freunden oder Experten – alles perfekt aufbereitet!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="cta-section text-white py-5">
+        <div class="container py-5">
+            <div class="text-center">
+                <h2 class="display-5 fw-bold mb-4">Bereit für mehr Überblick?</h2>
+                <p class="lead mb-4 opacity-90">
+                    Starte jetzt mit TopSpecs und bringe Ordnung in deine Hobbys.
+                    Egal ob Fahrrad, Solaranlage oder Computer – alles an einem Ort!
+                </p>
+                <a class="btn btn-light btn-lg px-5 fw-semibold" href="/weather">Jetzt loslegen!</a>
+            </div>
+        </div>
+    </section>
+</div>
+
+
+@code {
+    private static readonly FeatureItem[] Features =
+    [
+        new(Icons.Material.Filled.SmartToy, "KI-Ready Specs generieren", "Generiere strukturierte Specs-Dateien für deine Sachen und nutze sie direkt mit KI-Tools.", "/weather"),
+        new(Icons.Material.Filled.Link, "Smart KI-Links", "Erstelle eigene Links mit vorausgefüllten Prompts – ein Klick und die KI kennt dein Item.", "/counter"),
+        new(Icons.Material.Filled.DirectionsBike, "Alles über dein Rennrad", "Von der Rahmengröße über Komponenten bis zum letzten Service – behalte alles im Blick.", "/"),
+        new(Icons.Material.Filled.SolarPower, "PV-Anlagen im Griff", "Module, Wechselrichter, Ertragsdaten – verwalte deine Solaranlage strukturiert.", "/"),
+        new(Icons.Material.Filled.Computer, "Gaming PC perfekt dokumentiert", "CPU, GPU, RAM, Benchmarks – alle Specs und Upgrades an einem Ort.", "/"),
+        new(Icons.Material.Filled.Tune, "Total flexibel", "Definiere eigene Kategorien und Felder – von Weinsammlungen bis Modelleisenbahnen.", "/")
+    ];
+
+    private static readonly StatItem[] Stats =
+    [
+        new("1000+", "Glückliche Nutzer"),
+        new("50k+", "Verwaltete Items"),
+        new("∞", "Möglichkeiten"),
+        new("100%", "Deine Daten")
+    ];
+
+    private sealed record FeatureItem(string Icon, string Title, string Description, string Link);
+    private sealed record StatItem(string Value, string Label);
+}
