@@ -49,3 +49,19 @@
 .loading-progress-text:after {
     content: var(--blazor-load-percentage-text, "Loading");
 }
+
+/* Aspire-Dashboard-inspirierter Look: flache Karten mit duennen Rahmen statt Schatten */
+.mud-paper {
+    box-shadow: none !important;
+    border: 1px solid var(--mud-palette-lines-default);
+}
+
+.mud-table-container {
+    border: 1px solid var(--mud-palette-lines-default);
+    border-radius: var(--mud-default-borderradius);
+}
+
+.mud-table-row:hover {
+    background-color: var(--mud-palette-action-default-hover);
+}
+

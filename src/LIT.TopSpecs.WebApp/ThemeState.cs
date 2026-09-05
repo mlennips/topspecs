@@ -2,7 +2,7 @@ namespace LIT.TopSpecs.WebApp;
 
 public sealed class ThemeState
 {
-    public bool IsDarkMode { get; private set; }
+    public bool IsDarkMode { get; private set; } = true;
 
     public event Action? Changed;
 

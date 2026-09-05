@@ -2,24 +2,24 @@
 @inject ThemeState ThemeState
 
 <MudLayout>
-    <MudAppBar Elevation="1" Dense style="border-bottom: 1px solid #474747">
-        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@ToggleDrawer" />
-        <MudText Typo="Typo.h6" Class="ml-2">TOP<b>SPECS</b></MudText>
+    <MudAppBar Elevation="0" Dense Class="border-b" style="border-bottom: 1px solid var(--mud-palette-lines-default)">
+        <MudIconButton Icon="@Icons.Material.Outlined.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@ToggleDrawer" />
+        <MudText Typo="Typo.h6" Class="ml-2" Style="font-weight:600; letter-spacing:.5px">TOP<span style="color: var(--mud-palette-primary)">SPECS</span></MudText>
         <MudSpacer />
-        <MudIconButton Icon="@(ThemeState.IsDarkMode ? Icons.Material.Filled.LightMode : Icons.Material.Filled.DarkMode)" Color="Color.Inherit" OnClick="@ThemeState.Toggle" />
-        <MudIconButton Icon="@Icons.Material.Filled.Info" Color="Color.Inherit" Href="https://learn.microsoft.com/aspnet/core/" Target="_blank" />
+        <MudIconButton Icon="@(ThemeState.IsDarkMode ? Icons.Material.Outlined.LightMode : Icons.Material.Outlined.DarkMode)" Color="Color.Inherit" OnClick="@ThemeState.Toggle" />
+        <MudIconButton Icon="@Icons.Material.Outlined.Info" Color="Color.Inherit" Href="https://learn.microsoft.com/aspnet/core/" Target="_blank" />
     </MudAppBar>
 
     <MudDrawer @bind-Open="_drawerOpen"
-               Elevation="0" 
-               ClipMode="DrawerClipMode.Docked"
-               Breakpoint="Breakpoint.None" 
+               Elevation="0"
+               ClipMode="DrawerClipMode.Always"
+               Breakpoint="Breakpoint.None"
                Variant="DrawerVariant.Mini"
-               style="border-right: 1px solid #474747">
+               style="border-right: 1px solid var(--mud-palette-lines-default)">
         <NavMenu />
     </MudDrawer>
 
-    <MudMainContent>
+    <MudMainContent Style="background-color: var(--mud-palette-background)">
         <MudContainer MaxWidth="MaxWidth.Large" Class="my-4">
             @Body
         </MudContainer>

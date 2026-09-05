@@ -8,22 +8,22 @@ public static class AppTheme
     {
         PaletteLight = new PaletteLight()
         {
-            // LIGHT
-            Primary = "#5B63A6",         // dezentes Indigo/Blau statt grell
+            // LIGHT (Aspire-inspiriert, aber hell)
+            Primary = "#7A5AF8",         // Aspire-Violett
             Secondary = "#647087",       // gedämpftes Blaugrau
             Tertiary = "#71717A",
-            Background = "#FFFFFF",     // sehr helles Grau
+            Background = "#FAFAFA",
             Surface = "#FFFFFF",
-            AppbarBackground = "#111",
-            AppbarText = "#eee",      // sorgt für Kontrast in der Navbar
-            DrawerBackground = "#111", // dunkle Sidebar
-            DrawerText = "#fff",
-            DrawerIcon = "#9CA3AF",
-            TextPrimary = "#111827",
-            TextSecondary = "#6B7280",
-            LinesDefault = "#E5E7EB",
-            TableLines = "#E5E7EB",
-            Divider = "#E5E7EB",
+            AppbarBackground = "#1B1A19",
+            AppbarText = "#F3F2F1",
+            DrawerBackground = "#1B1A19",
+            DrawerText = "#F3F2F1",
+            DrawerIcon = "#C8C6C4",
+            TextPrimary = "#201F1E",
+            TextSecondary = "#605E5C",
+            LinesDefault = "#E1DFDD",
+            TableLines = "#E1DFDD",
+            Divider = "#E1DFDD",
             Success = "#4C9A6A",
             Error = "#C7524A",
             Warning = "#C0863A",
@@ -32,31 +32,39 @@ public static class AppTheme
 
         PaletteDark = new PaletteDark()
         {
-            // DARK
-            Primary = "#8B92C9",         // dezentes, helleres Indigo für Dark-Mode
+            // DARK (Aspire-Dashboard-Look): einheitliches, sehr dunkles Blau ueber AppBar, Drawer und Main-Bereich
+            Primary = "#9B7BFF",         // helles Violett als Akzent, wie im Aspire-Dashboard
             Secondary = "#8A96AC",
             Tertiary = "#94A3B8",
-            Background = "#221e2d",      // sehr dunkles Blau/Schwarz
-            Surface = "#333",
-            AppbarBackground = "#000",
-            AppbarText = "#E5E7EB",
-            DrawerBackground = "#000",
-            DrawerText = "#fff",
-            DrawerIcon = "#9CA3AF",
-            TextPrimary = "#F9FAFB",
-            TextSecondary = "#9CA3AF",
-            LinesDefault = "#1F2937",
-            TableLines = "#1F2937",
-            Divider = "#1F2937",
+            Background = "#221e2d",      // sehr dunkles Blau, durchgaengig fuer Main-Bereich
+            Surface = "#1B2140",         // etwas hellere Flaeche fuer Cards/Paper
+            AppbarBackground = "#111",
+            AppbarText = "#F3F2F1",
+            DrawerBackground = "#111",
+            DrawerText = "#F3F2F1",
+            DrawerIcon = "#C8C6C4",
+            TextPrimary = "#F3F2F1",
+            TextSecondary = "#C8C6C4",
+            LinesDefault = "#262B4A",    // dezente, blau abgestimmte Trennlinie statt Grau
+            TableLines = "#262B4A",
+            Divider = "#262B4A",
             Success = "#6EAF88",
             Error = "#D3766F",
             Warning = "#D1A15E",
             Info = "#6D9CC0",
         },
 
+        Typography = new Typography()
+        {
+            Default = new DefaultTypography()
+            {
+                FontFamily = ["Segoe UI", "-apple-system", "BlinkMacSystemFont", "Roboto", "Helvetica Neue", "sans-serif"]
+            }
+        },
+
         LayoutProperties = new LayoutProperties()
         {
-            DefaultBorderRadius = "10px"
+            DefaultBorderRadius = "4px"
         }
     };
 }
