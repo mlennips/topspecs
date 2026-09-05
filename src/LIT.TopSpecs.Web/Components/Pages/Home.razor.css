@@ -67,6 +67,32 @@
     background-color: #F1F3F5;
 }
 
+.stat-item {
+    background: #fff;
+    border: 1px solid #e9edf2;
+    border-radius: 12px;
+    padding: 1rem 1.1rem;
+    box-shadow: 0 6px 16px rgba(15, 23, 42, 0.04);
+}
+
+.stat-icon {
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 10px;
+    background: rgba(91, 141, 184, 0.12);
+    flex: 0 0 auto;
+}
+
+.stat-label {
+    font-weight: 600;
+    line-height: 1.2;
+}
+
+.stat-subtitle {
+    font-size: 0.88rem;
+    line-height: 1.35;
+}
+
 .cta-section {
     background: linear-gradient(135deg, #5B8DB8 0%, #4A7BA0 100%);
 }
