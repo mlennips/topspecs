@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
-using Microsoft.Authentication.WebAssembly.Msal;
 using LIT.TopSpecs.WebApp;
 using MudBlazor.Services;
 

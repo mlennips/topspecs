@@ -1,22 +1,26 @@
 @page "/dashboard"
+@attribute [Authorize]
 
 <PageTitle>Dashboard - TopSpecs</PageTitle>
 
-<AuthorizeView>
-    <Authorized>
-        <MudContainer MaxWidth="MaxWidth.Large" Class="px-4 py-6">
-            <MudText Typo="Typo.h4" Class="mb-4">Dashboard</MudText>
-            <MudText Typo="Typo.body1">
-                Willkommen zurück, @context.User.Identity?.Name!
-            </MudText>
-        </MudContainer>
-    </Authorized>
-    <Authorizing>
-        <MudContainer MaxWidth="MaxWidth.Large" Class="px-4 py-6">
-            <MudProgressCircular Indeterminate="true" />
-        </MudContainer>
-    </Authorizing>
-    <NotAuthorized>
-        <RedirectToLogin />
-    </NotAuthorized>
-</AuthorizeView>
+<MudContainer MaxWidth="MaxWidth.Large" Class="px-4 py-6">
+    <MudText Typo="Typo.h4" Class="mb-4">Dashboard</MudText>
+    <MudText Typo="Typo.body1">
+        Willkommen zurück, @UserName!
+    </MudText>
+</MudContainer>
+
+@code {
+    [CascadingParameter] private Task<AuthenticationState>? AuthStateTask { get; set; }
+
+    private string? UserName;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (AuthStateTask is not null)
+        {
+            var state = await AuthStateTask;
+            UserName = state.User.Identity?.Name;
+        }
+    }
+}
