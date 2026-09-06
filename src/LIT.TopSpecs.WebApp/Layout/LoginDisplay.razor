@@ -1,0 +1,12 @@
+<AuthorizeView>
+    <Authorized>
+        <MudNavLink Href="authentication/logout" Match="NavLinkMatch.All" Icon="@Icons.Material.Outlined.Logout">
+            Abmelden (@context.User.Identity?.Name)
+        </MudNavLink>
+    </Authorized>
+    <NotAuthorized>
+        <MudNavLink Href="authentication/login" Match="NavLinkMatch.All" Icon="@Icons.Material.Outlined.Login">
+            Anmelden
+        </MudNavLink>
+    </NotAuthorized>
+</AuthorizeView>

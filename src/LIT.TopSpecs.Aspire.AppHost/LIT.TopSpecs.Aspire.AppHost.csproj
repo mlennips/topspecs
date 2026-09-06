@@ -1,0 +1,14 @@
+﻿<Project Sdk="Aspire.AppHost.Sdk/13.5.3">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <AspireUseCliBundle>true</AspireUseCliBundle>
+    <UserSecretsId>1cd3e022-dc33-4f37-9323-4407b7198b63</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\LIT.TopSpecs.ApiService\LIT.TopSpecs.ApiService.csproj" />
+    <ProjectReference Include="..\LIT.TopSpecs.WebApp\LIT.TopSpecs.WebApp.csproj" />
+  </ItemGroup>
+
+</Project>

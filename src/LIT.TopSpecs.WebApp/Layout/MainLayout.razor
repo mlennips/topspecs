@@ -1,0 +1,36 @@
+﻿@inherits LayoutComponentBase
+@inject ThemeState ThemeState
+
+<MudLayout>
+    <MudAppBar Elevation="0" Dense style="border-bottom: 1px solid var(--mud-palette-lines-default)">
+        <MudIconButton Icon="@Icons.Material.Outlined.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@ToggleDrawer" />
+        <MudText Typo="Typo.h6" Class="ml-2" Style="font-weight:600; letter-spacing:.5px">TOP<span style="color: var(--mud-palette-primary)">SPECS</span></MudText>
+        <MudSpacer />
+        <MudIconButton Icon="@(ThemeState.IsDarkMode ? Icons.Material.Outlined.LightMode : Icons.Material.Outlined.DarkMode)" Color="Color.Inherit" OnClick="@ThemeState.Toggle" />
+        <MudIconButton Icon="@Icons.Material.Outlined.Info" Color="Color.Inherit" Href="https://learn.microsoft.com/aspnet/core/" Target="_blank" />
+    </MudAppBar>
+
+    <MudDrawer @bind-Open="_drawerOpen"
+               Elevation="0"
+               ClipMode="DrawerClipMode.Always"
+               Breakpoint="Breakpoint.None"
+               Variant="DrawerVariant.Mini"
+               style="border-right: 1px solid var(--mud-palette-lines-default)">
+        <NavMenu />
+    </MudDrawer>
+
+    <MudMainContent Style="background-color: var(--mud-palette-background)">
+        <MudContainer MaxWidth="MaxWidth.Large" Class="my-4">
+            @Body
+        </MudContainer>
+    </MudMainContent>
+</MudLayout>
+
+@code {
+    private bool _drawerOpen = true;
+
+    private void ToggleDrawer()
+    {
+        _drawerOpen = !_drawerOpen;
+    }
+}

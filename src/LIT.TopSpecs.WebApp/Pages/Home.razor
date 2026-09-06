@@ -1,0 +1,184 @@
+@page "/"
+
+<PageTitle>TopSpecs</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.Large" Class="px-4">
+
+    <MudPaper Elevation="0" Class="pa-8 mt-6 mb-4 rounded-lg mud-theme-primary">
+        <MudGrid AlignItems="Center">
+            <MudItem xs="12" md="7">
+                <MudText Typo="Typo.h4" Class="mb-3" Style="color: white;">
+                    Alles zu deinen Dingen. An einem Ort.
+                </MudText>
+                <MudText Typo="Typo.body1" Class="mb-6" Style="color: white;">
+                    Verwalte deine Gegenstände, hinterlege Details, Informationen und Messwerte –
+                    und binde sie mit wenigen Klicks an ChatGPT, Copilot &amp; Co. für deine Weiterentwicklung an.
+                </MudText>
+                <MudStack Row="true" Spacing="3">
+                    <MudButton Variant="Variant.Filled" Color="Color.Surface" Href="/">Kostenlos starten</MudButton>
+                    <MudButton Variant="Variant.Text" Style="color: white;" Href="/">So funktioniert's</MudButton>
+                </MudStack>
+            </MudItem>
+            <MudItem xs="12" md="5" Class="d-none d-md-flex justify-center align-center">
+                <div class="bubble-animation">
+                    @for (var i = 1; i <= 9; i++)
+                    {
+                        <div class="bubble bubble-@i"></div>
+                    }
+                </div>
+            </MudItem>
+        </MudGrid>
+    </MudPaper>
+
+    <MudContainer MaxWidth="MaxWidth.Large" Class="py-10">
+        <MudGrid Justify="Justify.Center" Spacing="6">
+            @foreach (var stat in Stats)
+            {
+                <MudItem xs="12" sm="6" lg="3">
+                    <MudStack Row="true" Spacing="3" AlignItems="AlignItems.Center">
+                        <MudIcon Icon="@stat.Icon" Size="Size.Medium" Color="Color.Primary" />
+                        <div>
+                            <MudText Typo="Typo.subtitle2">@stat.Label</MudText>
+                            <MudText Typo="Typo.body2" Color="Color.Secondary">@stat.Subtitle</MudText>
+                        </div>
+                    </MudStack>
+                </MudItem>
+            }
+        </MudGrid>
+    </MudContainer>
+
+    <MudDivider Class="my-4" />
+
+    <MudContainer MaxWidth="MaxWidth.Large" Class="py-10">
+        <MudText Typo="Typo.h4" Align="Align.Center" Class="mb-2">Was bringt dir TopSpecs im Alltag?</MudText>
+        <MudText Typo="Typo.body1" Align="Align.Center" Color="Color.Secondary" Class="mb-10">
+            Klare Infos, weniger Suchen, schneller teilen – genau dann, wenn es darauf ankommt.
+        </MudText>
+
+        <MudGrid Spacing="4">
+            @foreach (var feature in Features)
+            {
+                <MudItem xs="12" md="6" lg="4">
+                    <MudCard Elevation="1" Class="pa-4" Style="height: 100%;">
+                        <MudCardContent>
+                            <MudIcon Icon="@feature.Icon" Size="Size.Medium" Color="Color.Primary" Class="mb-2" />
+                            <MudText Typo="Typo.h6" Class="mb-1">@feature.Title</MudText>
+                            <MudText Typo="Typo.body2" Color="Color.Secondary">@feature.Description</MudText>
+                        </MudCardContent>
+                    </MudCard>
+                </MudItem>
+            }
+        </MudGrid>
+    </MudContainer>
+
+    <MudDivider Class="my-4" />
+
+    <MudContainer MaxWidth="MaxWidth.Large" Class="py-10">
+        <MudGrid Spacing="6">
+            <MudItem xs="12" lg="5">
+                <MudText Typo="Typo.h5" Class="mb-3">Mit KI arbeiten – ohne Technikballast</MudText>
+                <MudText Typo="Typo.body1" Color="Color.Secondary">
+                    TopSpecs bereitet Details, Informationen und Messwerte deiner Gegenstände so auf, dass du sie
+                    sofort in KI-Tools verwenden kannst – für schnellere Antworten und gezielte Weiterentwicklung.
+                </MudText>
+            </MudItem>
+            <MudItem xs="12" lg="7">
+                <MudGrid Spacing="3">
+                    <MudItem xs="12" sm="4">
+                        <MudCard Elevation="1" Class="pa-4" Style="height: 100%;">
+                            <MudCardContent>
+                                <MudText Typo="Typo.subtitle2" Class="mb-1">KI-Links</MudText>
+                                <MudText Typo="Typo.body2" Color="Color.Secondary">Speichere wiederkehrende Fragen als Link – ein Klick, alles ist vorbereitet.</MudText>
+                            </MudCardContent>
+                        </MudCard>
+                    </MudItem>
+                    <MudItem xs="12" sm="4">
+                        <MudCard Elevation="1" Class="pa-4" Style="height: 100%;">
+                            <MudCardContent>
+                                <MudText Typo="Typo.subtitle2" Class="mb-1">MCP-Anbindung</MudText>
+                                <MudText Typo="Typo.body2" Color="Color.Secondary">Verbinde deine Daten mit KI-Assistenten, damit relevante Infos direkt verfügbar sind.</MudText>
+                            </MudCardContent>
+                        </MudCard>
+                    </MudItem>
+                    <MudItem xs="12" sm="4">
+                        <MudCard Elevation="1" Class="pa-4" Style="height: 100%;">
+                            <MudCardContent>
+                                <MudText Typo="Typo.subtitle2" Class="mb-1">Sofort nutzbar</MudText>
+                                <MudText Typo="Typo.body2" Color="Color.Secondary">Keine langen Vorbereitungen: kopieren, teilen und direkt mit der KI arbeiten.</MudText>
+                            </MudCardContent>
+                        </MudCard>
+                    </MudItem>
+                </MudGrid>
+            </MudItem>
+        </MudGrid>
+    </MudContainer>
+
+    <MudDivider Class="my-4" />
+
+    <MudContainer MaxWidth="MaxWidth.Large" Class="py-10">
+        <MudText Typo="Typo.h4" Align="Align.Center" Class="mb-2">So funktioniert TopSpecs</MudText>
+        <MudText Typo="Typo.body1" Align="Align.Center" Color="Color.Secondary" Class="mb-10">
+            Einmal sauber erfassen – danach für Fragen, Service und KI direkt nutzbar.
+        </MudText>
+
+        <MudGrid Spacing="4">
+            @foreach (var step in Steps)
+            {
+                <MudItem xs="12" md="6" lg="3">
+                    <MudCard Elevation="1" Class="pa-4" Style="height: 100%;">
+                        <MudCardContent>
+                            <MudText Typo="Typo.subtitle2" Color="Color.Primary" Class="mb-1">@step.Number</MudText>
+                            <MudText Typo="Typo.h6" Class="mb-1">@step.Title</MudText>
+                            <MudText Typo="Typo.body2" Color="Color.Secondary">@step.Description</MudText>
+                        </MudCardContent>
+                    </MudCard>
+                </MudItem>
+            }
+        </MudGrid>
+    </MudContainer>
+
+    <MudPaper Elevation="0" Class="pa-8 mb-8 rounded-lg mud-theme-primary">
+        <MudContainer MaxWidth="MaxWidth.Medium">
+            <MudStack AlignItems="AlignItems.Center" Spacing="4">
+                <MudText Typo="Typo.h5" Align="Align.Center" Style="color: white;">Mehr Überblick, weniger Suchen</MudText>
+                <MudText Typo="Typo.body1" Align="Align.Center" Style="color: white;">
+                    Starte jetzt kostenlos und bring Ordnung in alles, was dir wichtig ist.
+                </MudText>
+                <MudButton Variant="Variant.Filled" Color="Color.Surface" Href="/">Jetzt kostenlos starten</MudButton>
+            </MudStack>
+        </MudContainer>
+    </MudPaper>
+
+</MudContainer>
+
+@code {
+    private static readonly FeatureItem[] Features =
+    [
+        new(Icons.Material.Filled.Inventory2, "Gegenstände verwalten", "Lege alle deine Gegenstände zentral an – vom Fahrrad über die Solaranlage bis zum Computer.", "/"),
+        new(Icons.Material.Filled.EditNote, "Details & Informationen hinterlegen", "Sammle Daten, Belege und Notizen zentral, damit nichts verloren geht.", "/"),
+        new(Icons.Material.Filled.Analytics, "Messwerte speichern", "Erfasse Messwerte und Verläufe, um Zustand und Entwicklung im Blick zu behalten.", "/"),
+        new(Icons.Material.Filled.Summarize, "KI-Zusammenfassungen auf Knopfdruck", "Erstelle eine klare Übersicht, die ChatGPT, Copilot & Co. sofort versteht.", "/"),
+        new(Icons.Material.Filled.Link, "Persönliche KI-Links", "Speichere wiederkehrende Fragen als smarte Links – ein Klick und alles ist vorbereitet.", "/"),
+        new(Icons.Material.Filled.Hub, "Einfache KI-Anbindung", "Verbinde TopSpecs per MCP mit deinen KI-Tools und nutze deine Daten direkt für die Weiterentwicklung.", "/")
+    ];
+
+    private static readonly StatItem[] Stats =
+    [
+        new(Icons.Material.Filled.Inventory2, "Gegenstände", "Zentral verwaltet, jederzeit griffbereit"),
+        new(Icons.Material.Filled.EditNote, "Details & Infos", "Nichts geht mehr verloren"),
+        new(Icons.Material.Filled.Analytics, "Messwerte", "Verläufe und Zustand im Blick"),
+        new(Icons.Material.Filled.Hub, "KI-Anbindung", "Direkt nutzbar für deine Weiterentwicklung")
+    ];
+
+    private static readonly StepItem[] Steps =
+    [
+        new("1", "Bereich anlegen", "Lege zuerst einen Bereich an, z. B. Fahrrad, Solaranlage oder Computer."),
+        new("2", "Item erfassen", "Trage Details, Belege und Notizen ein – alles bleibt zentral und auffindbar."),
+        new("3", "Ausgabe erstellen", "Erzeuge eine KI-taugliche Zusammenfassung oder einen smarten Link für wiederkehrende Fragen."),
+        new("4", "Direkt nutzen", "Teile die Infos mit Werkstatt oder Beratung – oder füge sie direkt in ChatGPT/Copilot ein.")
+    ];
+
+    private sealed record FeatureItem(string Icon, string Title, string Description, string Link);
+    private sealed record StatItem(string Icon, string Label, string Subtitle);
+    private sealed record StepItem(string Number, string Title, string Description);
+}

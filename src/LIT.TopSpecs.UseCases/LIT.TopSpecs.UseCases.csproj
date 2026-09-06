@@ -1,0 +1,8 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\LIT.TopSpecs.Domain\LIT.TopSpecs.Domain.csproj" />
+    <ProjectReference Include="..\LIT.TopSpecs.SharedKernel\LIT.TopSpecs.SharedKernel.csproj" />
+  </ItemGroup>
+
+</Project>
