@@ -11,8 +11,9 @@
                     Alles zu deinen Gegenständen. An einem Ort.
                 </MudText>
                 <MudText Typo="Typo.body1" Class="mb-6" Style="color: white;">
-                    Egal ob du gerade in der Rennrad-Bubble, Photovoltaik-Bubble oder Gaming-Bubble bist: Verwalte deine Gegenstände, hinterlege Details, Informationen und Messwerte –
-                    und binde sie mit wenigen Klicks an ChatGPT, Copilot &amp; Co. für deine Weiterentwicklung an.
+                    Egal ob du gerade in der Rennrad-Bubble, Photovoltaik-Bubble oder Gaming-Bubble bist: Verwalte deine Gegenstände,
+                    hinterlege Details, Belege und Messwerte, behalte deinen Anschaffungsstatus im Blick –
+                    und teile sie bei Bedarf direkt mit ChatGPT, Copilot &amp; Co.
                 </MudText>
                 <MudStack Row="true" Spacing="3">
                     <MudButton Variant="Variant.Filled" Color="Color.Surface" Href="authentication/login">Kostenlos starten</MudButton>
@@ -76,39 +77,27 @@
     <MudContainer MaxWidth="MaxWidth.Large" Class="py-10">
         <MudGrid Spacing="6">
             <MudItem xs="12" lg="5">
-                <MudText Typo="Typo.h5" Class="mb-3">Mit KI arbeiten – ohne Technikballast</MudText>
+                <MudText Typo="Typo.h5" Class="mb-3">Extra: Mit KI arbeiten – ohne Technikballast</MudText>
                 <MudText Typo="Typo.body1" Color="Color.Secondary">
-                    TopSpecs bereitet Details, Informationen und Messwerte deiner Gegenstände so auf, dass du sie
-                    sofort in KI-Tools verwenden kannst – für schnellere Antworten und gezielte Weiterentwicklung.
+                    Wenn du magst, bereitet TopSpecs Details, Informationen und Messwerte deiner Gegenstände so auf,
+                    dass du sie direkt in KI-Tools verwenden kannst – ein optionales Extra, kein Pflichtschritt.
                 </MudText>
             </MudItem>
             <MudItem xs="12" lg="7">
-                <MudGrid Spacing="3">
-                    <MudItem xs="12" sm="4">
-                        <MudCard Elevation="1" Class="pa-4" Style="height: 100%;">
-                            <MudCardContent>
-                                <MudText Typo="Typo.subtitle2" Class="mb-1">KI-Links</MudText>
-                                <MudText Typo="Typo.body2" Color="Color.Secondary">Speichere wiederkehrende Fragen als Link – ein Klick, alles ist vorbereitet.</MudText>
-                            </MudCardContent>
-                        </MudCard>
-                    </MudItem>
-                    <MudItem xs="12" sm="4">
-                        <MudCard Elevation="1" Class="pa-4" Style="height: 100%;">
-                            <MudCardContent>
-                                <MudText Typo="Typo.subtitle2" Class="mb-1">MCP-Anbindung</MudText>
-                                <MudText Typo="Typo.body2" Color="Color.Secondary">Verbinde deine Daten mit KI-Assistenten, damit relevante Infos direkt verfügbar sind.</MudText>
-                            </MudCardContent>
-                        </MudCard>
-                    </MudItem>
-                    <MudItem xs="12" sm="4">
-                        <MudCard Elevation="1" Class="pa-4" Style="height: 100%;">
-                            <MudCardContent>
-                                <MudText Typo="Typo.subtitle2" Class="mb-1">Sofort nutzbar</MudText>
-                                <MudText Typo="Typo.body2" Color="Color.Secondary">Keine langen Vorbereitungen: kopieren, teilen und direkt mit der KI arbeiten.</MudText>
-                            </MudCardContent>
-                        </MudCard>
-                    </MudItem>
-                </MudGrid>
+                <MudList Clickable="false" T="string">
+                    <MudListItem T="string" Icon="@Icons.Material.Filled.Link">
+                        <MudText Typo="Typo.subtitle2">KI-Links</MudText>
+                        <MudText Typo="Typo.body2" Color="Color.Secondary">Speichere wiederkehrende Fragen als Link – ein Klick, alles ist vorbereitet.</MudText>
+                    </MudListItem>
+                    <MudListItem T="string" Icon="@Icons.Material.Filled.Hub">
+                        <MudText Typo="Typo.subtitle2">MCP-Anbindung</MudText>
+                        <MudText Typo="Typo.body2" Color="Color.Secondary">Verbinde deine Daten mit KI-Assistenten, damit relevante Infos direkt verfügbar sind.</MudText>
+                    </MudListItem>
+                    <MudListItem T="string" Icon="@Icons.Material.Filled.FlashOn">
+                        <MudText Typo="Typo.subtitle2">Sofort nutzbar</MudText>
+                        <MudText Typo="Typo.body2" Color="Color.Secondary">Keine langen Vorbereitungen: kopieren, teilen und direkt mit der KI arbeiten.</MudText>
+                    </MudListItem>
+                </MudList>
             </MudItem>
         </MudGrid>
     </MudContainer>
@@ -118,7 +107,7 @@
     <MudContainer MaxWidth="MaxWidth.Large" Class="py-10">
         <MudText Typo="Typo.h4" Align="Align.Center" Class="mb-2">So funktioniert TopSpecs</MudText>
         <MudText Typo="Typo.body1" Align="Align.Center" Color="Color.Secondary" Class="mb-10">
-            Einmal sauber erfassen – danach für Fragen, Service und KI direkt nutzbar.
+            Einmal sauber erfassen – danach für Fragen, Service und optional auch KI direkt nutzbar.
         </MudText>
 
         <MudGrid Spacing="4">
@@ -155,27 +144,27 @@
     private static readonly FeatureItem[] Features =
     [
         new(Icons.Material.Filled.Inventory2, "Gegenstände verwalten", "Lege alle deine Gegenstände zentral an – vom Fahrrad über die Solaranlage bis zum Computer.", "/"),
-        new(Icons.Material.Filled.EditNote, "Details & Informationen hinterlegen", "Sammle Daten, Belege und Notizen zentral, damit nichts verloren geht.", "/"),
-        new(Icons.Material.Filled.Analytics, "Messwerte speichern", "Erfasse Messwerte und Verläufe, um Zustand und Entwicklung im Blick zu behalten.", "/"),
-        new(Icons.Material.Filled.Summarize, "KI-Zusammenfassungen auf Knopfdruck", "Erstelle eine klare Übersicht, die ChatGPT, Copilot & Co. sofort versteht.", "/"),
-        new(Icons.Material.Filled.Link, "Persönliche KI-Links", "Speichere wiederkehrende Fragen als smarte Links – ein Klick und alles ist vorbereitet.", "/"),
-        new(Icons.Material.Filled.Hub, "Einfache KI-Anbindung", "Verbinde TopSpecs per MCP mit deinen KI-Tools und nutze deine Daten direkt für die Weiterentwicklung.", "/")
+        new(Icons.Material.Filled.EditNote, "Details & Belege hinterlegen", "Sammle Details, Fotos, Rechnungen und Notizen zentral, damit nichts verloren geht.", "/"),
+        new(Icons.Material.Filled.Analytics, "Messwerte & Verlauf speichern", "Erfasse Messwerte, Werkstatt-Ergebnisse und Verläufe, um Zustand und Entwicklung im Blick zu behalten.", "/"),
+        new(Icons.Material.Filled.ShoppingCartCheckout, "Wunschliste & Anschaffungsplanung", "Behalte im Blick, was du besitzt, gerade planst oder dir wünschst – vom Ersatzteil bis zum nächsten großen Kauf.", "/"),
+        new(Icons.Material.Filled.Build, "Zustand im Blick behalten", "Ob aktiv genutzt, gerade in Reparatur oder verkauft: Der Status deiner Gegenstände bleibt immer aktuell.", "/"),
+        new(Icons.Material.Filled.Hub, "KI-Anbindung als Extra", "Wenn gewünscht: Teile deine Daten strukturiert mit ChatGPT, Copilot & Co. – ganz ohne technischen Aufwand.", "/")
     ];
 
     private static readonly StatItem[] Stats =
     [
         new(Icons.Material.Filled.Inventory2, "Gegenstände", "Zentral verwaltet, jederzeit griffbereit"),
-        new(Icons.Material.Filled.EditNote, "Details & Infos", "Nichts geht mehr verloren"),
-        new(Icons.Material.Filled.Analytics, "Messwerte", "Verläufe und Zustand im Blick"),
-        new(Icons.Material.Filled.Hub, "KI-Anbindung", "Direkt nutzbar für deine Weiterentwicklung")
+        new(Icons.Material.Filled.EditNote, "Details & Belege", "Nichts geht mehr verloren"),
+        new(Icons.Material.Filled.Analytics, "Messwerte & Verlauf", "Zustand und Entwicklung im Blick"),
+        new(Icons.Material.Filled.ShoppingCartCheckout, "Anschaffungsplanung", "Besitz, Planung und Wunschliste an einem Ort")
     ];
 
     private static readonly StepItem[] Steps =
     [
         new("1", "Gegenstand anlegen", "Lege zuerst einen Gegenstand an, z. B. Fahrrad, Solaranlage oder Computer."),
-        new("2", "Merkmale erfassen", "Trage Details, Belege und Notizen ein – alles bleibt zentral und auffindbar."),
-        new("3", "Ausgabe erstellen", "Erzeuge eine KI-taugliche Zusammenfassung oder einen smarten Link für wiederkehrende Fragen."),
-        new("4", "Direkt nutzen", "Teile die Infos direkt mit ChatGPT/Copilot.")
+        new("2", "Merkmale, Status & Belege erfassen", "Trage Details, Fotos, Rechnungen und deinen Anschaffungsstatus ein – alles bleibt zentral und auffindbar."),
+        new("3", "Verlauf pflegen", "Halte Messwerte, Wartungen und Änderungen über die Zeit fest."),
+        new("4", "Optional mit KI teilen", "Erzeuge bei Bedarf eine KI-taugliche Zusammenfassung oder einen smarten Link.")
     ];
 
     private sealed record FeatureItem(string Icon, string Title, string Description, string Link);
