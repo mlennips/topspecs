@@ -15,7 +15,7 @@
                     und binde sie mit wenigen Klicks an ChatGPT, Copilot &amp; Co. für deine Weiterentwicklung an.
                 </MudText>
                 <MudStack Row="true" Spacing="3">
-                    <MudButton Variant="Variant.Filled" Color="Color.Surface" Href="/">Kostenlos starten</MudButton>
+                    <MudButton Variant="Variant.Filled" Color="Color.Surface" Style="color: white;" Href="/">Kostenlos starten</MudButton>
                     <MudButton Variant="Variant.Text" Style="color: white;" Href="/">So funktioniert's</MudButton>
                 </MudStack>
             </MudItem>
@@ -35,8 +35,8 @@
             @foreach (var stat in Stats)
             {
                 <MudItem xs="12" sm="6" lg="3">
-                    <MudStack Row="true" Spacing="3" AlignItems="AlignItems.Center">
-                        <MudIcon Icon="@stat.Icon" Size="Size.Medium" Color="Color.Primary" />
+                    <MudStack Row="true" Spacing="4" AlignItems="AlignItems.Start">
+                        <MudIcon Icon="@stat.Icon" Size="Size.Large" Color="Color.Secondary" />
                         <div>
                             <MudText Typo="Typo.subtitle2">@stat.Label</MudText>
                             <MudText Typo="Typo.body2" Color="Color.Secondary">@stat.Subtitle</MudText>
@@ -172,10 +172,10 @@
 
     private static readonly StepItem[] Steps =
     [
-        new("1", "Bereich anlegen", "Lege zuerst einen Bereich an, z. B. Fahrrad, Solaranlage oder Computer."),
-        new("2", "Item erfassen", "Trage Details, Belege und Notizen ein – alles bleibt zentral und auffindbar."),
+        new("1", "Gegenstand anlegen", "Lege zuerst einen Gegenstand an, z. B. Fahrrad, Solaranlage oder Computer."),
+        new("2", "Merkmale erfassen", "Trage Details, Belege und Notizen ein – alles bleibt zentral und auffindbar."),
         new("3", "Ausgabe erstellen", "Erzeuge eine KI-taugliche Zusammenfassung oder einen smarten Link für wiederkehrende Fragen."),
-        new("4", "Direkt nutzen", "Teile die Infos mit Werkstatt oder Beratung – oder füge sie direkt in ChatGPT/Copilot ein.")
+        new("4", "Direkt nutzen", "Teile die Infos direkt mit ChatGPT/Copilot.")
     ];
 
     private sealed record FeatureItem(string Icon, string Title, string Description, string Link);
