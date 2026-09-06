@@ -27,3 +27,11 @@
         </NotAuthorized>
     </AuthorizeView>
 </MudAppBar>
+
+                       
+@code {
+    protected override void OnInitialized()
+    {
+        DrawerState.OnChange += StateHasChanged;
+    }
+}

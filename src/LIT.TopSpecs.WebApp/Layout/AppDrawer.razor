@@ -1,0 +1,58 @@
+﻿@using LIT.TopSpecs.WebApp.States
+@using Microsoft.AspNetCore.Components.Authorization
+@implements IDisposable
+@inject DrawerState DrawerState
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@if (DrawerState.IsEnabled)
+{
+    <MudDrawer @bind-Open="DrawerState.IsOpen"
+               Elevation="0"
+               ClipMode="@DrawerClipMode.Always"
+               Breakpoint="Breakpoint.None"
+               Variant="@DrawerVariant.Mini"
+               style="border-right: 1px solid var(--mud-palette-lines-default)">
+        <NavMenu />
+    </MudDrawer>
+}
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        DrawerState.OnChange += StateHasChanged;
+        AuthenticationStateProvider.AuthenticationStateChanged += OnAuthenticationStateChanged;
+
+        var state = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        ApplyAuthenticationState(state);
+    }
+
+    private void OnAuthenticationStateChanged(Task<AuthenticationState> task)
+    {
+        _ = HandleAuthenticationStateChangedAsync(task);
+    }
+
+    private async Task HandleAuthenticationStateChangedAsync(Task<AuthenticationState> task)
+    {
+        var state = await task;
+        ApplyAuthenticationState(state);
+    }
+
+    private void ApplyAuthenticationState(AuthenticationState state)
+    {
+        var isAuthenticated = state.User.Identity?.IsAuthenticated ?? false;
+
+        if (isAuthenticated)
+        {
+            DrawerState.Enable();
+        }
+        else
+        {
+            DrawerState.Disable();
+        }
+    }
+
+    public void Dispose()
+    {
+        DrawerState.OnChange -= StateHasChanged;
+        AuthenticationStateProvider.AuthenticationStateChanged -= OnAuthenticationStateChanged;
+    }
+}

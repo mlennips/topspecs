@@ -1,25 +1,12 @@
-﻿@using LIT.TopSpecs.WebApp.States
-@inherits LayoutComponentBase
-@inject DrawerState DrawerState
+﻿@inherits LayoutComponentBase
 
 <MudLayout>    
     <AppBar />
-
-    @if (DrawerState.IsEnabled)
-    {
-        <MudDrawer @bind-Open="DrawerState.IsOpen"
-                   Elevation="0"
-                   ClipMode="@DrawerState.DrawerClipMode"
-                   Breakpoint="Breakpoint.None"
-                   Variant="@DrawerState.DrawerVariant"
-                   style="border-right: 1px solid var(--mud-palette-lines-default)">
-            <NavMenu />
-        </MudDrawer>
-    }
-
+    <AppDrawer />
     <MudMainContent Style="background-color: var(--mud-palette-background)">
         <MudContainer MaxWidth="MaxWidth.Large" Class="my-4">
             @Body
         </MudContainer>
     </MudMainContent>
 </MudLayout>
+

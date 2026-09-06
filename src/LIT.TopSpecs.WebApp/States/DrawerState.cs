@@ -5,28 +5,27 @@ namespace LIT.TopSpecs.WebApp.States
     public sealed class DrawerState
     {
         public bool IsOpen { get; set; }
-        public bool IsEnabled { get; set; } = true;
-        public DrawerClipMode DrawerClipMode { get; internal set; } = DrawerClipMode.Always;
-        public DrawerVariant DrawerVariant { get; internal set; } = DrawerVariant.Mini;
+        public bool IsEnabled { get; private set; }
 
-        public DrawerState()
-        {
-
-        }
+        public event Action? OnChange;
 
         public void Toggle()
         {
             IsOpen = !IsOpen;
+            OnChange?.Invoke();
         }
 
-        private void Enable() 
-        { 
+        public void Enable()
+        {
             IsEnabled = true;
+            OnChange?.Invoke();
         }
 
-        private void Disable()
+        public void Disable()
         {
             IsEnabled = false;
+            IsOpen = false;
+            OnChange?.Invoke();
         }
     }
 }
