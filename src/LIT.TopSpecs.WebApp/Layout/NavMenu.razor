@@ -1,6 +1,11 @@
 ﻿<MudNavMenu Class="nav-menu-white" Dense="false">
     <MudNavLink Href="/" Match="NavLinkMatch.All" Icon="@Icons.Material.Outlined.Home">Willkommen</MudNavLink>
-    <MudNavLink Href="/login" Match="NavLinkMatch.All" Icon="@Icons.Material.Outlined.Login">Anmelden</MudNavLink>
+    <AuthorizeView>
+        <Authorized>
+            <MudNavLink Href="/dashboard" Match="NavLinkMatch.All" Icon="@Icons.Material.Outlined.Dashboard">Dashboard</MudNavLink>
+        </Authorized>
+    </AuthorizeView>
+    <LoginDisplay />
     <MudNavLink Href="/kontakt" Match="NavLinkMatch.All" Icon="@Icons.Material.Outlined.ContactSupport">Kontakt</MudNavLink>
 </MudNavMenu>
 

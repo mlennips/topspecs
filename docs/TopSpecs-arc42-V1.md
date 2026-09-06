@@ -81,7 +81,7 @@ Kernfähigkeiten:
 - Frontend: **Blazor WebAssembly** mit **MudBlazor** (Komponenten-Bibliothek,
   MIT-lizenziert – kompatibel mit AGPLv3, keine Copyleft-Pflicht bei
   NuGet-Abhängigkeiten)
-- Auth: **Keycloak**
+- Auth: **Microsoft Entra External ID**
 - Deployment: **Docker / .NET Aspire**
 
 ### 2.2 Architektur-Randbedingungen
@@ -134,7 +134,7 @@ Kernfähigkeiten:
 ```
 Blazor WASM (MudBlazor) ──HTTPS/REST/JSON──▶ ASP.NET Core API ──EF Core──▶ PostgreSQL (JSONB)
                                         │
-                                   Keycloak (OIDC) – Authentifizierung Web-UI
+                                   Microsoft Entra External ID (OIDC) – Authentifizierung Web-UI
 
 Anonymer Client (ShareLink-Aufruf) ──HTTPS──▶ öffentlicher API-Endpunkt (kein Login)
 ```
@@ -163,7 +163,7 @@ Anonymer Client (ShareLink-Aufruf) ──HTTPS──▶ öffentlicher API-Endpun
 ```
 /src
   /1-Presentation
-    TopSpecs.Api               (ASP.NET Core: Endpunkte, Keycloak-Auth, Mapping)
+    TopSpecs.Api               (ASP.NET Core: Endpunkte, Entra-Auth, Mapping)
     TopSpecs.Web                (Blazor WebAssembly, MudBlazor)
     TopSpecs.Mcp                 (geplant, nicht ausdetailliert – MCP-Tools,
                                    Auth über ShareLink-Token statt eigenem API-Key)
@@ -180,9 +180,9 @@ Anonymer Client (ShareLink-Aufruf) ──HTTPS──▶ öffentlicher API-Endpun
                                      Entity, Result, Guard, Specification<T>)
   /3-Infrastructure
     TopSpecs.Infrastructure         (EF Core, Read-/Write-Repositories, Unit of Work,
-                                      Keycloak-Integration, Output-Formatter)
+                                      Entra-Integration, Output-Formatter)
   /4-Aspire
-    TopSpecs.AppHost                 (Orchestrierung: Api, Web, Postgres, Keycloak)
+    TopSpecs.AppHost                 (Orchestrierung: Api, Web, Postgres; Entra External ID ist externer Cloud-Dienst, kein orchestrierter Container)
     TopSpecs.ServiceDefaults          (Telemetry, Health Checks, Resilience)
 /tests                                 (eigene Ebene, kein Layer unter /src – Tests
                                          stehen quer zu allen Architektur-Schichten)
@@ -241,10 +241,10 @@ public sealed class AuditInfo : ValueObject
 
 public sealed class UserId : ValueObject
 {
-    // Wrapt die Keycloak-Subject-ID (sub-Claim) – kein eigenes User-Aggregat
-    // im Domänenmodell nötig, Keycloak übernimmt die Nutzerverwaltung.
+    // Wrapt die Entra-Subject-ID (sub-Claim, oid) – kein eigenes User-Aggregat
+    // im Domänenmodell nötig, Microsoft Entra External ID übernimmt die Nutzerverwaltung.
     public string Value { get; }
-    public static UserId Of(string keycloakSubject) => new(keycloakSubject);
+    public static UserId Of(string entraSubject) => new(entraSubject);
 }
 
 // Konkrete Basisklassen für Aggregate Roots und Kind-Entities – beide erben
@@ -261,7 +261,7 @@ public sealed class AuditInfoInterceptor(ICurrentUserProvider currentUser, TimeP
     public override InterceptionResult<int> SavingChanges(DbContextEventData eventData, InterceptionResult<int> result)
     {
         var now = clock.GetUtcNow();
-        var userId = currentUser.UserId;   // aus Keycloak-Claims der aktuellen Anfrage
+        var userId = currentUser.UserId;   // aus Entra-Claims der aktuellen Anfrage
 
         foreach (var entry in eventData.Context!.ChangeTracker.Entries<IEntityBase>())
         {
@@ -710,8 +710,9 @@ eine schreibgeschützte Snapshot.
 ├─ TopSpecs.Web           (Blazor WASM, nativ via AddProject&lt;&gt; orchestriert –
 │                           kein separater JS-Prozess wie bei einer SPA)
 ├─ PostgreSQL               (Container lokal, verwalteter Dienst in Produktion)
-├─ Keycloak                  (Container, OIDC-Provider)
 └─ ServiceDefaults            (OpenTelemetry, Health Checks – einheitlich)
+
+Microsoft Entra External ID (externer Cloud-Dienst, OIDC-Provider – nicht Teil des AppHost)
 ```
 
 ---
@@ -806,7 +807,7 @@ kein zusätzliches Flag nötig – `IsCustom` ist rein abgeleitet
 
 ### 8.8 Sicherheit
 
-- Web-UI: **Keycloak** (OIDC).
+- Web-UI: **Microsoft Entra External ID** (OIDC).
 - ShareLinks: tokenbasiert, zeitlich befristet, kein Login – striktes
   Rate-Limiting, keine sensiblen Zusatzdaten im Export.
 
@@ -819,7 +820,7 @@ kein zusätzliches Flag nötig – `IsCustom` ist rein abgeleitet
 | Unit | `Domain.Templates.UnitTests` | AssetTemplate-/ComponentTemplate-Invarianten |
 | Unit | `UseCases.UnitTests` | Slice-Handler mit gemockten Repositories/UoW, inkl. Snapshot-Mapping |
 | Integration | `Infrastructure.IntegrationTests` | EF Core + JSONB gegen Testcontainer-Postgres |
-| Funktional | `Api.FunctionalTests` | End-to-End über HTTP inkl. Keycloak-Testrealm |
+| Funktional | `Api.FunctionalTests` | End-to-End über HTTP inkl. Entra-Testtenant |
 | Architektur | `Architecture.Tests` | NetArchTest: Bounded-Context-Isolation erzwingen |
 
 ### 8.10 Internationalisierung
@@ -942,4 +943,4 @@ Qualität
 | **IHasDescription** | Gemeinsame Schnittstelle für ein dauerhaftes Freitextfeld, implementiert von `Bubble`, `Asset`, `Component`, `Spec`, `AssetTemplate`, `ComponentTemplate`, `SpecTemplate` |
 | **EntityBase** | Gemeinsame Basisklasse in `SharedKernel`, von der `AggregateRoot<TId>` und `Entity<TId>` ableiten; trägt `AuditInfo` automatisch für jedes Entity |
 | **AuditInfo** | ValueObject für Erstellung/Änderung/Löschung (je Zeitpunkt + `UserId`), inkl. Soft-Delete (`IsDeleted`, abgeleitet aus `DeletedAt`) |
-| **UserId** | ValueObject, wrapt die Keycloak-Subject-ID; kein eigenes User-Aggregat im Domänenmodell |
+| **UserId** | ValueObject, wrapt die Entra-Subject-ID; kein eigenes User-Aggregat im Domänenmodell |

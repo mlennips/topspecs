@@ -9,7 +9,7 @@ zuerst aktualisiert).
 
 ## Tech-Stack
 .NET · ASP.NET Core Minimal APIs · EF Core + PostgreSQL (JSONB) · Blazor WebAssembly (MudBlazor) ·
-Keycloak · Docker/Aspire · FluentValidation · MediatR
+Microsoft Entra External ID · Docker/Aspire · FluentValidation · MediatR
 
 ## Architektur-Regeln (verbindlich)
 - Schichten: `Presentation → Infrastructure → UseCases/Domain → SharedKernel`.

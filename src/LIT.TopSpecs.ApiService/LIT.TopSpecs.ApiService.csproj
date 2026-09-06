@@ -1,5 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
+  <PropertyGroup>
+    <UserSecretsId>8ccfcce5-f4ed-41d3-86af-9a92e331529f</UserSecretsId>
+  </PropertyGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\LIT.TopSpecs.Aspire.ServiceDefaults\LIT.TopSpecs.Aspire.ServiceDefaults.csproj" />
     <ProjectReference Include="..\LIT.TopSpecs.Infrastructure\LIT.TopSpecs.Infrastructure.csproj" />
