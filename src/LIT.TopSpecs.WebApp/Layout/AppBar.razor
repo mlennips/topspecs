@@ -1,0 +1,29 @@
+﻿@using LIT.TopSpecs.WebApp.States
+@inject DrawerState DrawerState
+@inject ThemeState ThemeState
+
+<MudAppBar Elevation="0" Dense style="border-bottom: 1px solid var(--mud-palette-lines-default)">
+    @if (DrawerState.IsEnabled)
+    {
+        <MudIconButton Icon="@Icons.Material.Outlined.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@DrawerState.Toggle" />
+    }
+    <MudText Typo="Typo.h6" Class="ml-2" Style="letter-spacing:-.5px">TOP<span style="color: var(--mud-palette-primary); font-weight:800;">SPECS</span></MudText>
+    <MudSpacer />
+    <MudIconButton Icon="@(ThemeState.IsDarkMode ? Icons.Material.Outlined.LightMode : Icons.Material.Outlined.DarkMode)" Color="Color.Inherit" OnClick="@ThemeState.Toggle" />
+    <MudIconButton Icon="@Icons.Material.Outlined.Info" Color="Color.Inherit" Href="https://learn.microsoft.com/aspnet/core/" Target="_blank" />
+    <MudDivider Vertical="true" Class="mx-2" />
+    <AuthorizeView>
+        <Authorized>
+            <MudButton Href="user" Match="NavLinkMatch.All" StartIcon="@Icons.Material.Outlined.Person"
+                       Color="@Color.Transparent" Style="color: white;">
+                @context.User.Identity?.Name
+            </MudButton>
+        </Authorized>
+        <NotAuthorized>
+            <MudButton Href="authentication/login" Match="NavLinkMatch.All" StartIcon="@Icons.Material.Outlined.Login"
+                       Color="@Color.Transparent" Style="color: white;">
+                Anmelden
+            </MudButton>
+        </NotAuthorized>
+    </AuthorizeView>
+</MudAppBar>

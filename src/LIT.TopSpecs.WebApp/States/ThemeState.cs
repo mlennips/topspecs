@@ -1,4 +1,4 @@
-namespace LIT.TopSpecs.WebApp;
+namespace LIT.TopSpecs.WebApp.States;
 
 public sealed class ThemeState
 {
