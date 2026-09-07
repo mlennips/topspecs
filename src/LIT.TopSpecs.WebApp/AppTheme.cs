@@ -8,14 +8,14 @@ public static class AppTheme
     {
         PaletteLight = new PaletteLight()
         {
-            Primary = "#C1652F",
-            Secondary = "#2C6E6A",
+            Primary = "#3E5160",
+            Secondary = "#BF5C5C",
             Tertiary = "#6B8F6B",
-            Background = "#F7F2EA",
-            Surface = "#FCFAF6",
-            AppbarBackground = "#2B2823",
+            Background = "#C7C7C7",
+            Surface = "#D1D1D1",
+            AppbarBackground = "#A6A6A6",
             AppbarText = "#EFEAE0",
-            DrawerBackground = "#2B2823",
+            DrawerBackground = "#A6A6A6",
             DrawerText = "#EFEAE0",
             DrawerIcon = "#8FBDB8",
             TextPrimary = "#333333",
@@ -31,7 +31,7 @@ public static class AppTheme
 
         PaletteDark = new PaletteDark()
         {
-            Primary = "#1F4A47",
+            Primary = "#344049",
             Secondary = "#C07A6E",
             Tertiary = "#85AD85",
             Background = "#211F1B",
