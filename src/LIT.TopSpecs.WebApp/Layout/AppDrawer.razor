@@ -3,6 +3,7 @@
 @implements IDisposable
 @inject DrawerState DrawerState
 @inject AuthenticationStateProvider AuthenticationStateProvider
+
 @if (DrawerState.IsEnabled)
 {
     <MudDrawer @bind-Open="DrawerState.IsOpen"

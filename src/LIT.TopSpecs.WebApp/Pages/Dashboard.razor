@@ -1,19 +1,194 @@
 @page "/dashboard"
+
 @attribute [Authorize]
 
 <PageTitle>Dashboard - TopSpecs</PageTitle>
 
-<MudContainer MaxWidth="MaxWidth.Large" Class="px-4 py-6">
-    <MudText Typo="Typo.h4" Class="mb-4">Dashboard</MudText>
-    <MudText Typo="Typo.body1">
-        Willkommen zurück, @UserName!
-    </MudText>
+<MudContainer MaxWidth="MaxWidth.Large" Class="px-4">
+
+    <MudPaper Elevation="0" Class="pa-8 mt-6 mb-4 rounded-lg mud-theme-primary">
+        <MudGrid AlignItems="Center">
+            <MudItem xs="12" md="8">
+                <MudText Typo="Typo.h4" Class="mb-2" Style="color: white;">
+                    Willkommen zurück, @UserName!
+                </MudText>
+                <MudText Typo="Typo.body1" Style="color: white;">
+                    Hier ist dein Überblick über deine Bubbles, Gegenstände und die letzten Aktivitäten.
+                </MudText>
+            </MudItem>
+            <MudItem xs="12" md="4" Class="d-flex justify-end">
+                <MudButton Variant="Variant.Filled" Color="Color.Surface" Style="color: white;" StartIcon="@Icons.Material.Filled.Add">
+                    Neuer Gegenstand
+                </MudButton>
+            </MudItem>
+        </MudGrid>
+    </MudPaper>
+
+    <MudGrid Spacing="4" Class="mb-6">
+        @foreach (var stat in Stats)
+        {
+            <MudItem xs="12" sm="6" lg="3">
+                <MudPaper Elevation="1" Class="pa-4 rounded-lg" Style="height: 100%;">
+                    <MudStack Row="true" Spacing="3" AlignItems="AlignItems.Center">
+                        <MudIcon Icon="@stat.Icon" Size="Size.Large" Color="Color.Primary" />
+                        <div>
+                            <MudText Typo="Typo.h6">@stat.Value</MudText>
+                            <MudText Typo="Typo.body2" Color="Color.Secondary">@stat.Label</MudText>
+                        </div>
+                    </MudStack>
+                </MudPaper>
+            </MudItem>
+        }
+    </MudGrid>
+
+    <MudGrid Spacing="4">
+        <MudItem xs="12" md="7">
+            <MudPaper Elevation="1" Class="pa-4 rounded-lg mb-4">
+                <MudText Typo="Typo.h6" Class="mb-3">Deine Bubbles</MudText>
+                <MudGrid Spacing="3">
+                    @foreach (var bubble in Bubbles)
+                    {
+                        <MudItem xs="12" sm="6">
+                            <MudCard Elevation="0" Outlined="true">
+                                <MudCardContent>
+                                    <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
+                                        <MudStack Row="true" Spacing="2" AlignItems="AlignItems.Center">
+                                            <MudIcon Icon="@bubble.Icon" Color="Color.Secondary" />
+                                            <MudText Typo="Typo.subtitle1">@bubble.Name</MudText>
+                                        </MudStack>
+                                        <MudChip T="string" Size="Size.Small" Color="Color.Primary" Variant="Variant.Text">@bubble.AssetCount Gegenstände</MudChip>
+                                    </MudStack>
+                                </MudCardContent>
+                            </MudCard>
+                        </MudItem>
+                    }
+                </MudGrid>
+            </MudPaper>
+
+            <MudPaper Elevation="1" Class="pa-4 rounded-lg">
+                <MudText Typo="Typo.h6" Class="mb-3">Arbeit fortsetzen</MudText>
+                <MudList Clickable="true" T="string">
+                    @foreach (var item in ContinueWorking)
+                    {
+                        <MudListItem T="string" Icon="@Icons.Material.Filled.ArrowForward">
+                            <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Style="width: 100%;">
+                                <div>
+                                    <MudText Typo="Typo.subtitle2">@item.Title</MudText>
+                                    <MudText Typo="Typo.body2" Color="Color.Secondary">@item.Description</MudText>
+                                </div>
+                                <MudText Typo="Typo.caption" Color="Color.Secondary">@item.LastEdited</MudText>
+                            </MudStack>
+                        </MudListItem>
+                    }
+                </MudList>
+            </MudPaper>
+
+            <MudPaper Elevation="1" Class="pa-4 rounded-lg mt-4">
+                <MudText Typo="Typo.h6" Class="mb-3">Aktive ShareLinks</MudText>
+                <MudList Clickable="true" T="string">
+                    @foreach (var link in ActiveShareLinks)
+                    {
+                        <MudListItem T="string" Icon="@IconHelper.ShareLink()">
+                            <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Style="width: 100%;">
+                                <div>
+                                    <MudText Typo="Typo.subtitle2">@link.AssetName</MudText>
+                                    <MudText Typo="Typo.body2" Color="Color.Secondary">@link.Format &middot; @link.Views Aufrufe</MudText>
+                                </div>
+                                <MudChip T="string" Size="Size.Small" Color="@link.StatusColor" Variant="Variant.Text">@link.ExpiresIn</MudChip>
+                            </MudStack>
+                        </MudListItem>
+                    }
+                </MudList>
+            </MudPaper>
+        </MudItem>
+
+        <MudItem xs="12" md="5">
+            <MudPaper Elevation="1" Class="pa-4 rounded-lg mb-4">
+                <MudText Typo="Typo.h6" Class="mb-3">Letzte Änderungen</MudText>
+                <MudTimeline TimelinePosition="TimelinePosition.Start">
+                    @foreach (var activity in RecentActivity)
+                    {
+                        <MudTimelineItem Color="Color.Primary" Size="Size.Small">
+                            <MudText Typo="Typo.subtitle2">@activity.Title</MudText>
+                            <MudText Typo="Typo.body2" Color="Color.Secondary">@activity.Description</MudText>
+                            <MudText Typo="Typo.caption" Color="Color.Secondary">@activity.Timestamp</MudText>
+                        </MudTimelineItem>
+                    }
+                </MudTimeline>
+            </MudPaper>
+
+            <MudPaper Elevation="1" Class="pa-4 rounded-lg">
+                <MudText Typo="Typo.h6" Class="mb-3">Bald verfügbar</MudText>
+                <MudList Clickable="false" T="string">
+                    @foreach (var upcoming in UpcomingFeatures)
+                    {
+                        <MudListItem T="string" Icon="@upcoming.Icon">
+                            <MudText Typo="Typo.subtitle2">@upcoming.Title</MudText>
+                            <MudText Typo="Typo.body2" Color="Color.Secondary">@upcoming.Description</MudText>
+                        </MudListItem>
+                    }
+                </MudList>
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
+
 </MudContainer>
 
 @code {
     [CascadingParameter] private Task<AuthenticationState>? AuthStateTask { get; set; }
 
     private string? UserName;
+
+    private record StatCard(string Icon, string Value, string Label);
+    private record BubbleSummary(string Icon, string Name, int AssetCount);
+    private record ContinueWorkingItem(string Title, string Description, string LastEdited);
+    private record ActivityEntry(string Title, string Description, string Timestamp);
+    private record UpcomingFeature(string Icon, string Title, string Description);
+    private record ShareLinkEntry(string AssetName, string Format, int Views, string ExpiresIn, Color StatusColor);
+
+    private readonly List<StatCard> Stats =
+    [
+        new(IconHelper.Asset(), "12", "Gegenstände gesamt"),
+        new(IconHelper.Bubble(), "3", "Bubbles"),
+        new(IconHelper.Component(), "27", "Components"),
+        new(IconHelper.ShareLink(), "2", "Aktive ShareLinks"),
+    ];
+
+    private readonly List<BubbleSummary> Bubbles =
+    [
+        new(Icons.Material.Filled.DirectionsBike, "Rennrad", 4),
+        new(Icons.Material.Filled.SolarPower, "Photovoltaik", 5),
+        new(Icons.Material.Filled.SportsEsports, "Gaming", 3),
+    ];
+
+    private readonly List<ContinueWorkingItem> ContinueWorking =
+    [
+        new("Rennrad \"Aeroad\"", "Component \"Laufradsatz\" – Spec ergänzen", "vor 2 Stunden"),
+        new("Wechselrichter SolarEdge", "Journal-Eintrag zu Ertragswerten", "gestern"),
+        new("Gaming-PC", "Komponenten-Baum vervollständigen", "vor 3 Tagen"),
+    ];
+
+    private readonly List<ActivityEntry> RecentActivity =
+    [
+        new("Asset angelegt", "\"Wallbox\" wurde der Photovoltaik-Bubble hinzugefügt", "vor 1 Stunde"),
+        new("Attachment hochgeladen", "Rechnung zu \"Rennrad Aeroad\" gespeichert", "vor 5 Stunden"),
+        new("ShareLink erstellt", "Freigabe für \"Gaming-PC\" (7 Tage gültig)", "gestern"),
+        new("Ownership geändert", "\"Wallbox\" von Wishlist auf Owned gesetzt", "vor 2 Tagen"),
+    ];
+
+    private readonly List<ShareLinkEntry> ActiveShareLinks =
+    [
+        new("Rennrad \"Aeroad\"", "PDF-Export", 14, "noch 3 Tage", Color.Success),
+        new("Gaming-PC", "Web-Ansicht", 42, "noch 6 Tage", Color.Success),
+        new("Wechselrichter SolarEdge", "Markdown (KI)", 5, "läuft heute ab", Color.Warning),
+    ];
+
+    private readonly List<UpcomingFeature> UpcomingFeatures =
+    [
+        new(IconHelper.AiLink(), "KI-Links", "Wiederkehrende Fragen als Link speichern und teilen"),
+        new(IconHelper.McpHub(), "MCP-Anbindung", "Daten direkt mit KI-Assistenten verbinden"),
+        new(IconHelper.AssetRelationship(), "Asset-Beziehungen", "Fachliche Verknüpfungen zwischen Assets abbilden"),
+    ];
 
     protected override async Task OnInitializedAsync()
     {
