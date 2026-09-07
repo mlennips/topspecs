@@ -1,8 +1,10 @@
 ﻿@using LIT.TopSpecs.WebApp.States
 @using Microsoft.AspNetCore.Components.Authorization
-@implements IDisposable
+@implements IAsyncDisposable
+@implements IBrowserViewportObserver
 @inject DrawerState DrawerState
 @inject AuthenticationStateProvider AuthenticationStateProvider
+@inject IBrowserViewportService BrowserViewportService
 
 @if (DrawerState.IsEnabled)
 {
@@ -10,13 +12,19 @@
                Elevation="0"
                ClipMode="@DrawerClipMode.Always"
                Breakpoint="Breakpoint.None"
-               Variant="@DrawerVariant.Mini"
-               style="border-right: 1px solid var(--mud-palette-lines-default)">
+               Variant="@_drawerVariant"
+               OverlayAutoClose="true"
+               Overlay
+               style="border-right: 0px solid var(--mud-palette-lines-default)">
         <NavMenu />
     </MudDrawer>
 }
 
 @code {
+    private DrawerVariant _drawerVariant = DrawerVariant.Mini;
+
+    public Guid Id { get; } = Guid.NewGuid();
+
     protected override async Task OnInitializedAsync()
     {
         DrawerState.OnChange += StateHasChanged;
@@ -24,6 +32,23 @@
 
         var state = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         ApplyAuthenticationState(state);
+
+        await BrowserViewportService.SubscribeAsync(this, fireImmediately: true);
+    }
+
+    MudBlazor.Services.ResizeOptions? IBrowserViewportObserver.ResizeOptions { get; } = new()
+    {
+        ReportRate = 250,
+        NotifyOnBreakpointOnly = true
+    };
+
+    Task IBrowserViewportObserver.NotifyBrowserViewportChangeAsync(BrowserViewportEventArgs browserViewportEventArgs)
+    {
+        _drawerVariant = browserViewportEventArgs.Breakpoint <= Breakpoint.Sm
+            ? DrawerVariant.Temporary
+            : DrawerVariant.Mini;
+
+        return InvokeAsync(StateHasChanged);
     }
 
     private void OnAuthenticationStateChanged(Task<AuthenticationState> task)
@@ -51,9 +76,10 @@
         }
     }
 
-    public void Dispose()
+    public async ValueTask DisposeAsync()
     {
         DrawerState.OnChange -= StateHasChanged;
         AuthenticationStateProvider.AuthenticationStateChanged -= OnAuthenticationStateChanged;
+        await BrowserViewportService.UnsubscribeAsync(this);
     }
 }
