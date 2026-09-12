@@ -24,7 +24,6 @@ namespace LIT.TopSpecs.WebApp.States
         public void Disable()
         {
             IsEnabled = false;
-            IsOpen = false;
             OnChange?.Invoke();
         }
     }

@@ -1,6 +1,6 @@
 # TopSpecs – Architekturdokumentation (arc42)
 
-**Version: V1.1**
+**Version: V1.9**
 
 ---
 
@@ -21,7 +21,12 @@ Kernfähigkeiten:
   Themenbereichen (`Bubble`). Specs können sowohl direkt am `Asset` als auch an
   einem `Component` hängen.
 - Wiederverwendbare Vorlagen (`AssetTemplate`, `ComponentTemplate`,
-  `SpecTemplate`) für wiederkehrende Gegenstands-Arten.
+  `SpecTemplate`) für wiederkehrende Gegenstands-Arten – öffentliche
+  (u. a. System-)Templates und private Templates unterschieden, Stufe 1 nur
+  öffentliche, code-basierte System-Templates (siehe 8.11), Stufe 2 erlaubt
+  eigene Templates optional zu veröffentlichen. Aus einer Vorlage erzeugte
+  Specs bleiben danach unabhängig veränderbar (Wert **und** Datentyp/Einheit
+  pro Instanz individuell anpassbar, z. B. Ganzzahl → Fließkommazahl).
 - Anschaffungsstatus (`Ownership`: Owned/Planning/Wishlist) auf Asset- **und**
   Component-Ebene unabhängig nachhalten.
 - Reale Identität (`AssetIdentity`: Seriennummer/Asset-Tag) für den eigentlichen
@@ -46,6 +51,8 @@ Kernfähigkeiten:
   (Model Context Protocol): fremde KI-Clients greifen strukturiert auf ein
   freigegebenes Asset zu, authentifiziert über denselben `ShareLink`-Token –
   kein separates API-Key-Konzept. Details folgen in einer späteren Version.
+- *(Geplant, grob skizziert)* Papierkorb: Wiederherstellen oder endgültiges
+  Löschen soft-gelöschter Elemente (siehe 8.15).
 
 ### 1.2 Qualitätsziele (Top 5)
 
@@ -182,7 +189,9 @@ Anonymer Client (ShareLink-Aufruf) ──HTTPS──▶ öffentlicher API-Endpun
     TopSpecs.Infrastructure         (EF Core, Read-/Write-Repositories, Unit of Work,
                                       Entra-Integration, Output-Formatter)
   /4-Aspire
-    TopSpecs.AppHost                 (Orchestrierung: Api, Web, Postgres; Entra External ID ist externer Cloud-Dienst, kein orchestrierter Container)
+    TopSpecs.AppHost                 (Orchestrierung: Api, Web, Postgres; Entra
+                                       External ID ist externer Cloud-Dienst,
+                                       kein orchestrierter Container)
     TopSpecs.ServiceDefaults          (Telemetry, Health Checks, Resilience)
 /tests                                 (eigene Ebene, kein Layer unter /src – Tests
                                          stehen quer zu allen Architektur-Schichten)
@@ -249,7 +258,16 @@ public sealed class UserId : ValueObject
 
 // Konkrete Basisklassen für Aggregate Roots und Kind-Entities – beide erben
 // AuditInfo transitiv über EntityBase<TId>, ohne es erneut zu deklarieren.
-public abstract class AggregateRoot<TId> : EntityBase<TId> { }
+public abstract class AggregateRoot<TId> : EntityBase<TId>
+{
+    // Gilt für jedes Aggregat gleichermaßen – deshalb hier statt wiederholt
+    // auf Asset/Bubble/Journal/etc. einzeln definiert.
+    public Result Delete(UserId deletedBy, DateTimeOffset deletedAt)
+    {
+        Audit = Audit.OnDelete(deletedBy, deletedAt);
+        return Result.Success();
+    }
+}
 public abstract class Entity<TId> : EntityBase<TId> { }
 ```
 
@@ -335,6 +353,7 @@ public sealed class Asset : AggregateRoot<AssetId>, IHasSpecs, IHasDescription
 {
     public BubbleId BubbleId { get; private set; }
     public AssetTemplateId? TemplateId { get; private set; }   // leichte Kopplung an Templates-Kontext
+    public DateTimeOffset? TemplateSnapshotAt { get; private set; }   // wann zuletzt mit Template-Baum abgeglichen
     public Ownership Ownership { get; private set; }
     public LifecycleStatus LifecycleStatus { get; private set; }
     public AssetIdentity? Identity { get; private set; }
@@ -347,15 +366,28 @@ public sealed class Asset : AggregateRoot<AssetId>, IHasSpecs, IHasDescription
     public static Result<Asset> Create(string name, BubbleId bubbleId, Ownership ownership) { /* Invarianten */ }
     public Result<Component> AddComponent(string name, ComponentId? parentComponentId = null) { /* Baum konsistent halten */ }
 
-    // Alle vier Methoden folgen demselben Muster: targetComponentId = null wirkt
+    // Alle Methoden folgen demselben Muster: targetComponentId = null wirkt
     // auf das Asset selbst, ein gesetzter Wert navigiert zum Ziel-Component
     // innerhalb des Baums – Mutation läuft ausschließlich über die Aggregatwurzel.
     // Entity-Ebene: nur Basis-Invarianten (z.B. Key nicht leer). Die Cross-Context-Prüfung
-    // gegen SpecTemplate.DataType/Unit passiert vorgelagert im Handler (siehe 8.7).
-    public Result<Spec> AddSpec(ComponentId? targetComponentId, string key, string value, Unit? unit, SpecTemplateId? templateId = null) { /* ... */ }
+    // gegen SpecTemplate.DefaultValueType passiert vorgelagert im Handler (siehe 8.7).
+    public Result<Spec> AddSpec(ComponentId? targetComponentId, string key, string value, SpecValueType valueType, SpecTemplateId? templateId = null) { /* ... */ }
+    public Result UpdateSpecValue(ComponentId? targetComponentId, SpecId specId, string value) { /* ... */ }
+    public Result UpdateSpecValueType(ComponentId? targetComponentId, SpecId specId, SpecValueType valueType) { /* z.B. Ganzzahl -> Fließkommazahl für diese eine Instanz */ }
     public Result SetOwnership(ComponentId? targetComponentId, Ownership ownership) { /* ... */ }
     public Result SetLifecycleStatus(ComponentId? targetComponentId, LifecycleStatus status) { /* ... */ }
     public Result SetDescription(ComponentId? targetComponentId, string? description) { /* ... */ }
+
+    // Fail-by-default bei vorhandenen Sub-Components – verhindert überraschendes
+    // kaskadierendes Löschen. force=true erzwingt rekursives Soft-Delete des
+    // Component-Teilbaums. UI prüft idealerweise vorab lokal auf bereits
+    // geladenen Daten (Component.Children), bevor der Aufruf überhaupt erfolgt.
+    public Result RemoveComponent(ComponentId targetComponentId, UserId deletedBy, DateTimeOffset deletedAt, bool force = false)
+    { /* ohne force: Failure, falls Children.Any(); mit force: Component + alle Sub-Components rekursiv Audit.OnDelete(...) */ }
+
+    // Spec ist ein Blatt (keine Kinder) – kein force-Flag nötig, kein Kaskadierungsfall.
+    public Result RemoveSpec(ComponentId? targetComponentId, SpecId specId, UserId deletedBy, DateTimeOffset deletedAt)
+    { /* Spec.Audit = Spec.Audit.OnDelete(deletedBy, deletedAt) */ }
 }
 
 public sealed class Component : Entity<ComponentId>, IHasSpecs, IHasDescription
@@ -376,8 +408,21 @@ public sealed class Spec : Entity<SpecId>, IHasDescription
     public bool IsCustom => TemplateId is null;                          // rein abgeleitet, keine eigene Datenhaltung
     public string Key { get; private set; }
     public string Value { get; private set; }
-    public Unit? Unit { get; private set; }
+    public SpecValueType ValueType { get; private set; }                 // Snapshot aus SpecTemplate, danach unabhängig
     public string? Description { get; private set; }
+}
+
+public sealed class SpecValueType : ValueObject
+{
+    // Fasst DataType + Unit zusammen (gemeinsame Änderungseinheit, kein
+    // inkonsistenter Zwischenzustand). Wird beim Anlegen aus SpecTemplate
+    // kopiert (Snapshot, kein Live-Link, siehe ADR #5), danach unabhängig
+    // vom Template veränderbar.
+    public SpecDataType DataType { get; }
+    public Unit? Unit { get; }
+
+    public static SpecValueType Of(SpecDataType dataType, Unit? unit) => new(dataType, unit);
+    private SpecValueType(SpecDataType dataType, Unit? unit) => (DataType, Unit) = (dataType, unit);
 }
 
 public sealed class LifecycleStatus : ValueObject
@@ -449,6 +494,12 @@ public sealed class Journal : AggregateRoot<JournalId>
         IReadOnlyCollection<Measurement> measurements,
         DateTimeOffset occurredAt)
     { /* Invariante: mind. Notes oder Measurements gesetzt */ }
+
+    // Soft-Delete eines einzelnen Eintrags (z.B. versehentliche Doppelerfassung
+    // korrigieren) – JournalEntry ist Kind-Entity, bekommt Delete() daher nicht
+    // automatisch von AggregateRoot<TId>, sondern über die Wurzel.
+    public Result RemoveEntry(JournalEntryId entryId, UserId deletedBy, DateTimeOffset deletedAt)
+    { /* entry.Audit = entry.Audit.OnDelete(deletedBy, deletedAt) */ }
 }
 
 public sealed class JournalEntry : Entity<JournalEntryId>
@@ -555,7 +606,12 @@ public sealed class AssetTemplate : AggregateRoot<AssetTemplateId>, IHasDescript
     public string Name { get; private set; }
     public string Category { get; private set; }
     public string? Description { get; private set; }
+    public UserId OwnerUserId { get; private set; }        // immer gesetzt – Systemvorlagen bekommen eine fiktive, reservierte UserId
+    public bool IsPublic { get; private set; }               // Sichtbarkeit für andere Nutzer, unabhängig vom Owner
     public IReadOnlyCollection<ComponentTemplate> ComponentTemplates => _componentTemplates.AsReadOnly();
+
+    public Result Publish() { /* IsPublic = true */ }
+    public Result Unpublish() { /* IsPublic = false */ }
 }
 
 public sealed class ComponentTemplate : Entity<ComponentTemplateId>, IHasDescription
@@ -569,8 +625,7 @@ public sealed class ComponentTemplate : Entity<ComponentTemplateId>, IHasDescrip
 public sealed class SpecTemplate : Entity<SpecTemplateId>, IHasDescription
 {
     public string Key { get; private set; }
-    public SpecDataType DataType { get; private set; }
-    public Unit? Unit { get; private set; }
+    public SpecValueType DefaultValueType { get; private set; }   // dieselbe VO-Struktur wie an Spec, als Vorlage
     public string? Description { get; private set; }
     public bool Required { get; private set; }
 }
@@ -607,8 +662,13 @@ UseCases/
 │   ├─ Assets/
 │   │   ├─ CreateAsset/
 │   │   ├─ CreateAssetFromTemplate/   (ruft Templates-Kontext, siehe 5.9)
+│   │   ├─ ApplyTemplateUpdates/       (rein additiv, siehe 8.11 – ruft
+│   │   │                               ebenfalls Templates-Kontext)
 │   │   ├─ AddComponent/
+│   │   ├─ RemoveComponent/             (force-Flag, siehe 8.13)
+│   │   ├─ HardDeleteAsset/              (Purge, kaskadiert auf Journal, siehe 8.14)
 │   │   ├─ AddSpec/                    (an Asset oder Component, targetComponentId)
+│   │   ├─ RemoveSpec/                  (an Asset oder Component, targetComponentId)
 │   │   ├─ SetOwnership/                (an Asset oder Component)
 │   │   ├─ SetLifecycleStatus/          (an Asset oder Component)
 │   │   ├─ SetDescription/              (an Asset oder Component)
@@ -619,6 +679,7 @@ UseCases/
 │   │   └─ ListRelationshipsForAsset/
 │   ├─ Journals/
 │   │   ├─ AddJournalEntry/
+│   │   ├─ RemoveJournalEntry/
 │   │   └─ GetJournal/
 │   ├─ Attachments/
 │   │   ├─ UploadAttachment/            (Asset-, Component- oder Spec-Ebene)
@@ -626,7 +687,13 @@ UseCases/
 │   │   └─ GetAttachmentsForTarget/
 │   └─ ShareLinks/    (Create/Revoke/Resolve/GetForShareLink)
 └─ Templates/
-    ├─ AssetTemplates/    (Create/Update/SetDescription/List/GetSnapshot)
+    ├─ AssetTemplates/    (Create/Update/SetDescription/Publish/Unpublish/
+    │                      ListAvailable [gefiltert nach IsPublic ||
+    │                      OwnerUserId == currentUserId] /GetSnapshot).
+    │                      Stufe 1: Create/Update/Delete nur via SystemTemplateSeeder
+    │                      (Infrastructure, code-basiert) – kein UI-/API-Zugriff für
+    │                      Endnutzer. Stufe 2: API-Zugriff für persönliche Templates
+    │                      inkl. Publish/Unpublish.
     ├─ ComponentTemplates/ (Create/Update/SetDescription/List)
     └─ SpecTemplates/       (Create/Update/SetDescription/List)
 ```
@@ -660,12 +727,9 @@ eine schreibgeschützte Snapshot.
 3. Handler ruft `GetAssetTemplateSnapshotQuery` im `Templates`-Kontext auf,
    erhält einen `AssetTemplateSnapshot` (DTO, keine Domain-Referenz).
 4. Handler baut daraus rekursiv `Asset` → `Component`-Baum lokal in `Inventory`
-   auf; `TemplateId` wird je Ebene aus dem Snapshot übernommen, `Ownership`
-   initial `Wishlist()` oder `Planning()`. Die in 8.7 beschriebene
-   Cross-Context-Validierung gegen `SpecTemplate` entfällt hier – die
-   Default-Werte stammen aus derselben Vorlage, gegen die sonst geprüft würde,
-   eine Prüfung wäre zirkulär. Sie greift ausschließlich, wenn ein Nutzer
-   *nachträglich* einen Standard-Spec-Wert manuell ändert.
+   auf; `TemplateId` wird je Ebene aus dem Snapshot übernommen, `SpecValueType`
+   wird dabei einmalig aus dem Snapshot in die neue `Spec` kopiert (siehe 8.7),
+   `Ownership` initial `Wishlist()` oder `Planning()`.
 5. `IUnitOfWork.SaveChangesAsync()` persistiert den gesamten Baum als ein
    Aggregat; Specs werden in die JSONB-Spalte serialisiert.
 
@@ -707,7 +771,7 @@ eine schreibgeschützte Snapshot.
 ```
 .NET Aspire AppHost
 ├─ TopSpecs.Api          (Container/Prozess)
-├─ TopSpecs.Web           (Blazor WASM, nativ via AddProject&lt;&gt; orchestriert –
+├─ TopSpecs.Web           (Blazor WASM, nativ via AddProject<> orchestriert –
 │                           kein separater JS-Prozess wie bei einer SPA)
 ├─ PostgreSQL               (Container lokal, verwalteter Dienst in Produktion)
 └─ ServiceDefaults            (OpenTelemetry, Health Checks – einheitlich)
@@ -794,16 +858,22 @@ in den jeweiligen Aggregaten selbst.
 
 **Standard-Spec vs. Custom-Spec:** `Spec.TemplateId` (nullable) entscheidet,
 kein zusätzliches Flag nötig – `IsCustom` ist rein abgeleitet
-(`TemplateId is null`). Die Validierungstiefe unterscheidet sich aber bewusst:
+(`TemplateId is null`). Die Validierung selbst unterscheidet **nicht** mehr
+danach, sondern läuft für beide Fälle identisch gegen `Spec.ValueType` –
+das ist der eigentliche Vorteil von `SpecValueType` als Snapshot:
 
-- **Standard-Spec** (`TemplateId` gesetzt): Handler lädt vorab per
-  Cross-Context-Query einen `SpecTemplateSnapshot` aus dem `Templates`-Kontext
-  und prüft `Value` gegen dessen `DataType`/`Unit` – klassische
-  Cross-Entity-Validierung (hier sogar Cross-Context), gehört laut Hybrid-Regel
-  in den Handler.
-- **Custom-Spec** (`TemplateId` = null): keine Cross-Context-Prüfung möglich
-  (es gibt keine Vorlage) – nur die Basis-Invariante im `Asset`/`Component`
-  selbst (`Key` nicht leer, `Value` nicht leer).
+- **Bei der Erstellung** (nur hier, einmalig): `AddSpec` übernimmt
+  `SpecValueType` entweder aus dem `SpecTemplateSnapshot` (Standard-Spec) oder
+  direkt vom Nutzer (Custom-Spec) – keine laufende Cross-Context-Abhängigkeit
+  danach.
+- **Bei jeder weiteren Änderung** (`UpdateSpecValue`/`UpdateSpecValueType`):
+  Validierung läuft ausschließlich gegen die **eigene**, bereits gespeicherte
+  `Spec.ValueType` – kein erneuter Cross-Context-Query zum `Templates`-Kontext
+  nötig, unabhängig davon, ob es ursprünglich ein Standard- oder Custom-Spec
+  war. Das ist auch der Grund, warum sich ein Ganzzahl-Feld nachträglich auf
+  Fließkommazahl ändern lässt (ADR #35): `UpdateSpecValueType` ersetzt einfach
+  die gespeicherte `ValueType`, ohne dass das ursprüngliche `SpecTemplate`
+  davon betroffen ist oder mitreden kann.
 
 ### 8.8 Sicherheit
 
@@ -815,11 +885,11 @@ kein zusätzliches Flag nötig – `IsCustom` ist rein abgeleitet
 
 | Ebene | Projekt | Fokus |
 |---|---|---|
-| Unit | `SharedKernel.UnitTests` | `AuditInfo`-Übergänge (`OnCreate`/`OnUpdate`/`OnDelete`), `IsDeleted`-Ableitung |
-| Unit | `Domain.Inventory.UnitTests` | Asset-/Component-Invarianten, Ownership, LifecycleStatus, Rekursion, Journal-/Attachment-/AssetRelationship-Invarianten |
+| Unit | `SharedKernel.UnitTests` | `AuditInfo`-Übergänge (`OnCreate`/`OnUpdate`/`OnDelete`), `IsDeleted`-Ableitung, `AggregateRoot.Delete(...)` |
+| Unit | `Domain.Inventory.UnitTests` | Asset-/Component-Invarianten, Ownership, LifecycleStatus, Rekursion, Journal-/Attachment-/AssetRelationship-Invarianten, `RemoveComponent` (Fail-by-default bei Children, rekursives Soft-Delete mit `force`) |
 | Unit | `Domain.Templates.UnitTests` | AssetTemplate-/ComponentTemplate-Invarianten |
-| Unit | `UseCases.UnitTests` | Slice-Handler mit gemockten Repositories/UoW, inkl. Snapshot-Mapping |
-| Integration | `Infrastructure.IntegrationTests` | EF Core + JSONB gegen Testcontainer-Postgres |
+| Unit | `UseCases.UnitTests` | Slice-Handler mit gemockten Repositories/UoW, inkl. Snapshot-Mapping und `ApplyTemplateUpdates` (rein additiv, keine Überschreibung individualisierter `SpecValueType`-Werte) |
+| Integration | `Infrastructure.IntegrationTests` | EF Core + JSONB gegen Testcontainer-Postgres, inkl. `IPurgeableRepository`-Kaskade (Asset-Hard-Delete löscht zugehöriges Journal) |
 | Funktional | `Api.FunctionalTests` | End-to-End über HTTP inkl. Entra-Testtenant |
 | Architektur | `Architecture.Tests` | NetArchTest: Bounded-Context-Isolation erzwingen |
 
@@ -828,6 +898,160 @@ kein zusätzliches Flag nötig – `IsCustom` ist rein abgeleitet
 Backend liefert ausschließlich Keys, keine deutschen Texte, keine Icons im
 Domänencode. Frontend mapped via i18n und setzt CSS-Klassen auf Basis des
 Status-Strings.
+
+### 8.11 Template-Rollout: öffentliche vs. private Templates
+
+Zwei Ausbaustufen, ein Domänenmodell (siehe ADR #36/#37):
+
+| | Stufe 1 (aktuell) | Stufe 2 (später) |
+|---|---|---|
+| Öffentliche Templates (`IsPublic == true`) | Nur System-Templates (fiktive `OwnerUserId`), per `SystemTemplateSeeder` (Infrastructure) code-basiert angelegt, idempotent bei jedem Start geprüft | Zusätzlich Nutzer-Templates, die per `Publish()` veröffentlicht wurden |
+| Private Templates (`IsPublic == false`, `OwnerUserId` = echter Nutzer) | Modell existiert, aber kein Erstellungsweg über API/UI | Erstellbar/bearbeitbar/veröffentlichbar über eigene Vertical Slices |
+| Lesen/Verwenden für `CreateAssetFromTemplate` | Ja, für alle sichtbaren Templates (Filter siehe unten) | Unverändert |
+
+Kein Unterschied im Domänenmodell zwischen den beiden Stufen, nur im
+Zugriffspfad – `OwnerUserId` ist immer gesetzt, auch für System-Templates
+(reservierte, fiktive `UserId`, z. B. eine feste Konstante), `IsSystemTemplate`
+gibt es dadurch bewusst **nicht** als eigenes Konzept.
+
+```csharp
+public sealed class SystemTemplateSeeder(IWriteRepository<AssetTemplate> repository, IUnitOfWork unitOfWork)
+{
+    private static readonly UserId SystemUserId = UserId.Of("system");   // reservierte, fiktive UserId
+
+    public async Task SeedAsync(CancellationToken ct)
+    {
+        // Prüft je System-Template (z.B. per Name+Category), ob es schon existiert,
+        // bevor es mit OwnerUserId = SystemUserId und IsPublic = true neu angelegt wird
+        // – idempotent, läuft bei jedem Anwendungsstart.
+    }
+}
+```
+
+`ListAvailableAssetTemplatesQuery` bekommt `UserId` als Parameter und filtert
+serverseitig nach `IsPublic || OwnerUserId == currentUserId` – ein einzelnes,
+einheitliches Kriterium statt einer Sonderbehandlung für „System".
+
+### 8.12 Template-Konsistenz: Erkennen und Übernehmen von Änderungen
+
+Ein Asset hat nach dem Erstellen **keine funktionale Abhängigkeit** mehr zum
+Template (ADR #5, #35) – Änderungen am Template wirken sich nicht rückwirkend
+aus. Was fehlt, ist reine **Information**: erkennen, dass sich das Original
+weiterentwickelt hat, und optional davon profitieren.
+
+**Erkennen, ohne neues Feld am Template:** `AssetTemplate` erbt bereits
+`AuditInfo.UpdatedAt` (ADR #30/#31) – ein zusätzlicher Versionszähler wäre
+redundant. Da Änderungen aber auch an Kind-Entities (`ComponentTemplate`,
+`SpecTemplate`, jeweils eigene `AuditInfo`) passieren können, muss der
+Vergleich über den **gesamten Template-Baum** laufen:
+
+```
+MaxTemplateTreeUpdatedAt = Max(
+    AssetTemplate.Audit.UpdatedAt,
+    alle ComponentTemplate.Audit.UpdatedAt im Baum,
+    alle SpecTemplate.Audit.UpdatedAt im Baum
+)
+```
+
+„Update verfügbar" ⇔ `Asset.TemplateSnapshotAt < MaxTemplateTreeUpdatedAt` –
+berechnet aus dem ohnehin vorhandenen `AssetTemplateSnapshot` (Published
+Language, 5.9), keine neue Infrastruktur nötig.
+
+**Übernehmen – rein additiv, nie überschreibend oder löschend:**
+
+| Fall | Verhalten von `ApplyTemplateUpdates` |
+|---|---|
+| Neue `ComponentTemplate`/`SpecTemplate` seit `TemplateSnapshotAt` hinzugekommen | Wird ergänzt, über die bestehenden `AddComponent`/`AddSpec` |
+| Bestehende `SpecTemplate` hat jetzt einen anderen `DefaultValueType` | Ignoriert – `Spec.ValueType` bleibt unangetastet, unabhängig davon, ob der Nutzer sie selbst geändert hat |
+| `ComponentTemplate`/`SpecTemplate` wurde entfernt (Soft-Delete) | Ignoriert – nichts wird beim Nutzer gelöscht |
+
+Kein neuer Domain-Code am Aggregat nötig – der Handler des
+`ApplyTemplateUpdates`-Slice gleicht den aktuellen Snapshot gegen die im
+Asset-Baum vorhandenen `TemplateId`-Referenzen ab und ruft für fehlende
+Elemente die längst bestehenden Methoden auf. Danach wird
+`Asset.TemplateSnapshotAt` aktualisiert. Läuft **ausschließlich auf explizite
+Nutzeraktion**, nie automatisch im Hintergrund.
+
+**Bewusst nicht umgesetzt:** Eine vollständige Versionshistorie mit
+Diff-Ansicht („was hat sich zwischen zwei Ständen geändert") – eigenständiges,
+deutlich größeres Feature, lohnt sich erst bei nachgewiesenem Bedarf.
+
+### 8.13 Entfernen von Component/Spec: Fail-by-default statt stillem Kaskadieren
+
+`Asset.RemoveComponent(...)` schlägt standardmäßig fehl, wenn der Ziel-`Component`
+noch Sub-Components besitzt – verhindert überraschendes Verschwinden eines
+ganzen Teilbaums durch einen einzelnen Klick. Erst `force: true` erzwingt
+rekursives Soft-Delete (`AuditInfo.OnDelete(...)`) des Components und aller
+Sub-Components. `RemoveSpec` braucht dieses Flag nicht – `Spec` ist ein Blatt
+ohne Kinder, kein Kaskadierungsfall möglich.
+
+**UI-seitiger Vorab-Check ohne neuen Endpunkt:** `GetAsset` lädt über die
+`AssetTreeByIdSpecification` (8.3) ohnehin den kompletten Component-Baum – die
+UI kann also lokal auf bereits geladenen Daten prüfen, ob `Component.Children`
+leer ist, und den Nutzer proaktiv warnen/`force` anbieten, bevor überhaupt ein
+Request an den Server geht. Kein zusätzlicher Query-Slice nötig.
+
+**Bewusst offen gelassen:** Was mit `Attachment`/`Journal`-Einträgen passiert,
+die auf ein entferntes `Component`/`Spec` verweisen. Konsistent mit dem
+etablierten Soft-Delete-Prinzip (nichts verschwindet physisch) bleiben diese
+Referenzen einfach bestehen und zeigen auf ein als gelöscht markiertes, aber
+weiterhin existierendes Element – analog zu `TemplateId`, das ebenfalls auf
+soft-gelöschte Templates zeigen kann (8.12). Keine Sonderbehandlung nötig.
+
+### 8.14 Journal-Historie: Soft-Delete vs. Hard-Delete
+
+Zwei unterschiedliche Löschvorgänge mit bewusst unterschiedlicher Wirkung auf
+`Journal`:
+
+| Vorgang | Wirkung auf `Journal` |
+|---|---|
+| Soft-Delete eines `Component` (inkl. Sub-Components/Specs darunter) | **Unberührt** – `Journal`/`JournalEntry` bleiben vollständig erhalten, auch wenn sie sich auf das soft-gelöschte Component beziehen |
+| Soft-Delete eines `Asset` | **Unberührt** – da `Journal` ein eigenständiges Aggregat mit eigener `AuditInfo` ist, hat das Verstecken des `Asset` (globaler Query-Filter) keine Auswirkung auf `Journal`, das über eine eigene, unabhängige Query erreichbar bleibt |
+| Hard-Delete eines `Asset` | **Physisch gelöscht** – `Journal` (und alle `JournalEntry`) werden im selben Vorgang unwiderruflich entfernt |
+
+Der Grundgedanke: Solange ein Asset (auch nur soft-gelöscht) potenziell wieder
+sichtbar/relevant werden könnte, bleibt seine komplette Historie erhalten –
+erst die endgültige Entscheidung „das gibt es nicht mehr" (Hard-Delete) nimmt
+auch die Historie mit.
+
+```csharp
+// SharedKernel – generisch, nicht Journal-spezifisch
+public interface IPurgeableRepository<T> : IWriteRepository<T>
+{
+    Task PurgeAsync(TId id, CancellationToken ct);   // echtes SQL DELETE, kein Soft-Delete
+}
+```
+
+Der Handler für `HardDeleteAsset` (Inventory/Assets) ruft
+`IPurgeableRepository<Asset>.PurgeAsync` und im selben Schritt
+`IPurgeableRepository<Journal>.PurgeAsync` für das zugehörige `Journal` auf –
+eine Transaktion über `IUnitOfWork`.
+
+**Bewusst offen gelassen, nicht Teil dieser Version:** Was mit `Attachment`
+und `AssetRelationship` bei einem Asset-Hard-Delete passiert, wurde nicht
+festgelegt – beide referenzieren `AssetId` ähnlich wie `Journal`, aber das
+wurde bisher nur für `Journal` explizit entschieden.
+
+**Historische Anzeige über gelöschte Elemente hinweg:** Damit ein
+`JournalEntry` auch nach Soft-Delete des referenzierten `Component`/`Spec`
+noch sinnvoll anzeigbar bleibt (z. B. „Ölwechsel am Schaltwerk" auch wenn das
+Schaltwerk inzwischen entfernt wurde), muss die Anzeige-Query den globalen
+Query-Filter für diesen einen Lookup gezielt umgehen (`IgnoreQueryFilters()`
+bzw. eine eigene „inklusive gelöschter"-Specification) – reine
+Leseoperation, keine Auswirkung auf die normale Sichtbarkeit.
+
+### 8.15 Papierkorb (Wiederherstellen): geplant, nicht Teil dieser Version
+
+Soft-gelöschte Elemente sollen später wiederherstellbar oder endgültig
+löschbar sein – ein „Papierkorb"-Konzept. Wie bei `MCP` (Kapitel 1.1) bewusst
+nur grob skizziert, nicht ausdetailliert:
+
+- `AggregateRoot<TId>.Restore()` als Gegenstück zu `Delete()` (setzt
+  `Audit.DeletedAt`/`DeletedBy` zurück auf `null`)
+- Eigene Query „Liste soft-gelöschter Elemente" (muss `IgnoreQueryFilters()`
+  nutzen)
+- UI-seitiger „Papierkorb"-Bereich, aus dem heraus wiederhergestellt oder
+  endgültig gelöscht (Hard-Delete) werden kann
 
 ---
 
@@ -853,7 +1077,7 @@ Status-Strings.
 | 16 | `AssetRelationship` aktiviert (nicht mehr ausgeklammert): Asset↔Asset, Component↔Asset, symmetrisch auch Component↔Component | Realer Bedarf bestätigt (PV-Anlage↔Wallbox); symmetrische Struktur (optionale ComponentId auf beiden Seiten) ist einfacher als eine asymmetrische Sonderregel | Ursprünglich ausgeklammert (kein Bedarf erkennbar) – durch Praxis-Beispiel widerlegt; künstliche Beschränkung auf nur zwei der drei Kombinationen (unnötige Komplexität ohne Nutzen) |
 | 17 | `IHasSpecs` statt `ISpecCarrier` | Konsistent zum bestehenden Namensmuster `IHasDisplayName` | `ISpecCarrier` (eigenes, sonst ungenutztes Namensmuster) |
 | 18 | Kein separates `CustomSpec`/`IsCustom`-Feld, sondern abgeleitete Property aus `TemplateId is null` | Vermeidet redundante Datenhaltung (DRY) | Eigenes `IsCustom`-Feld oder eigene `CustomSpec`-Klasse |
-| 19 | Standard-Spec-Werte werden bei nachträglicher Nutzeränderung gegen `SpecTemplate` validiert, Custom-Spec bleibt frei | Konsistenz zur Vorlage bei manueller Änderung, ohne Ad-hoc-Specs künstlich einzuschränken | Keine Validierung für Standard-Specs (Inkonsistenz zur Vorlage möglich) |
+| 19 | *(überholt durch ADR #35)* Ursprünglich: Standard-Spec-Werte werden bei Änderung live gegen `SpecTemplate` validiert. Ersetzt, da `Spec.ValueType` jetzt eigener Snapshot ist (ADR #35) – kein Live-Bezug zum Template mehr, auch nicht bei Änderungen | – | – |
 | 20 | `LifecycleStatus` als eigenes ValueObject, getrennt von `Ownership` | Unterschiedliche fachliche Bedeutung: Anschaffungsstatus vs. Betriebszustand danach; ein Asset kann `Owned` und gleichzeitig `InRepair` sein | Wiederverwendung von `Ownership` mit zusätzlichen Werten (vermischt zwei Konzepte) |
 | 21 | `Attachment` als eigenständiges Aggregat (wie `Journal`) | Unbegrenztes Wachstum, kein automatisches Mitladen beim Asset-Zugriff nötig | Anhänge als Liste im `Asset`-Aggregat |
 | 22 | Attachment-Datei in Blob-Storage, nur Metadaten in PostgreSQL | Vermeidet große Binärdaten in der relationalen Datenbank | Datei direkt als `bytea`/JSONB in PostgreSQL |
@@ -869,6 +1093,19 @@ Status-Strings.
 | 32 | Optimistic-Concurrency-Token über PostgreSQL-`xmin`, keine eigene Domain-Property | Native Npgsql-Unterstützung, reine Infrastructure-Konfiguration; Nebenläufigkeit ist kein Domänenkonzept | Eigenes `RowVersion`-Property auf `EntityBase` (unnötige Domain-Verunreinigung mit technischem Detail) |
 | 33 | Soft-Delete (`DeletedAt`/`DeletedBy`) als dritter Wertepaar in `AuditInfo`, nicht separates Konzept | Fachlich dasselbe Muster wie Created/Updated (Zeitpunkt + Nutzer); ein zusammengehöriges ValueObject statt verstreuter Felder | Separates `SoftDeleteInfo`-ValueObject oder lose Properties direkt auf `EntityBase` |
 | 34 | Frontend: Blazor WebAssembly mit MudBlazor statt Angular | Native Aspire-Integration (`AddProject<>()`, kein separater npm-Prozess wie bei der Angular-Integration erlebt); direkte Typteilung mit `Domain`/`UseCases` (`AssetId`, `Ownership`, Validatoren); ein Sprach-/Tooling-Stack für Solo-Entwickler; MudBlazor MIT-lizenziert, kompatibel mit AGPLv3 | Angular (ursprüngliche Wahl, aber Aspire-Integration manuell/reibungsvoll, kein Type-Sharing mit Backend); React (dieselben Nachteile wie Angular) |
+| 35 | `SpecValueType` (DataType + Unit gebündelt) als eigenes ValueObject an `Spec`, als **Snapshot** aus `SpecTemplate.DefaultValueType` kopiert, danach unabhängig veränderbar (`Asset.UpdateSpecValueType`) | Erlaubt Instanz-Override (z. B. Ganzzahl → Fließkommazahl für ein einzelnes Asset) ohne Live-Kopplung ans Template (konsistent zu ADR #5); DataType und Unit ändern sich immer gemeinsam, kein inkonsistenter Zwischenzustand | Separate `SpecTemplateOverride`-Entity (führt zu Live-Lookup-Problem oder faktisch derselben Kopie mit Zusatz-Tabelle); `DataType` weiterhin nur am Template (macht Instanz-Override unmöglich) |
+| 36 | *(überholt durch ADR #39)* Ursprünglich: `AssetTemplate.OwnerUserId` nullable, `null` = System-Template. Ersetzt, da „öffentlich/privat" auch für persönliche Templates gebraucht wird, nicht nur für System-Templates | – | – |
+| 37 | Templates zweistufig ausgebaut: Stufe 1 nur öffentliche System-Templates (code-basiert, per Seeder in DB), Stufe 2 UI-Verwaltung für private/veröffentlichbare Templates | Reduziert Erstaufwand auf das Nötigste; Domänenmodell (`OwnerUserId`/`IsPublic`) ist von Anfang an vollständig, nur der UI-/API-Zugriffspfad für eigene Templates fehlt zunächst | Beides gleichzeitig umsetzen (mehr Aufwand vor dem ersten nutzbaren Release) |
+| 38 | `SpecTemplate.DefaultValueType` nutzt dieselbe `SpecValueType`-Struktur wie `Spec.ValueType` | Eine Struktur für „Vorlage" und „Instanz" – Kopiervorgang beim Erstellen ist eine reine Werteübernahme, keine Konvertierung zwischen zwei unterschiedlichen Typen nötig | Getrennte Typen für Template-Default und Instanz-Wert (unnötige Konvertierungslogik) |
+| 39 | `AssetTemplate.OwnerUserId` **nicht** nullable (Systemvorlagen bekommen eine fiktive, reservierte `UserId`) + eigenständiges `IsPublic`-Flag, unabhängig vom Owner | Deckt den realen Fall ab, dass auch ein *privates, nutzereigenes* Template später veröffentlicht werden kann (`Publish()`) – „gehört mir" und „ist für andere sichtbar" sind zwei unabhängige Fragen, kein einziges Kriterium | `IsSystemTemplate` als abgeleitetes Flag (deckt nur System-vs-Eigenes ab, nicht das spätere Veröffentlichen eigener Templates) |
+| 40 | Template-Änderungen über bestehende `AuditInfo.UpdatedAt` erkennen (über den gesamten Template-Baum), kein zusätzlicher `Version`-Zähler | Vermeidet Redundanz – der Zeitstempel existiert bereits auf jedem Entity (ADR #30); ein eigener Zähler würde dieselbe Information doppelt vorhalten | Eigenes `int Version`-Feld an `AssetTemplate` (redundant zu vorhandenem `AuditInfo`) |
+| 41 | `ApplyTemplateUpdates` rein additiv (neue Elemente ergänzen), nie überschreibend oder löschend | Schützt bereits individualisierte Werte (z. B. per `UpdateSpecValueType` geänderter Datentyp) vor stillschweigendem Verlust; explizite Nutzeraktion statt Auto-Sync | Vollständiger Abgleich inkl. Überschreiben/Löschen (würde Nutzer-Anpassungen zerstören); automatischer Hintergrund-Sync (Kontrollverlust für den Nutzer) |
+| 42 | `Delete(UserId, DateTimeOffset)` auf `AggregateRoot<TId>` selbst definiert, nicht pro Aggregat wiederholt | Soft-Delete gilt universell für jedes Aggregat – eine Definition an der gemeinsamen Basisklasse statt identischer Methode auf `Asset`, `Bubble`, `Journal`, etc. | Methode einzeln auf jedem Aggregat wiederholen (Code-Duplikation) |
+| 43 | `RemoveComponent` fail-by-default bei vorhandenen Sub-Components, `force: true` erzwingt rekursives Soft-Delete; `RemoveSpec` ohne force-Flag (Blatt, kein Kaskadierungsfall) | Verhindert überraschendes Verschwinden ganzer Teilbäume durch einen Klick; UI kann Vorab-Check auf bereits geladenem `Component.Children` durchführen, kein neuer Endpunkt nötig | Stilles, immer-kaskadierendes Löschen (überraschend); komplett verbieten, solange Kinder existieren (unflexibel, kein bewusstes Override möglich) |
+| 44 | `Journal` bleibt bei Soft-Delete von `Component` oder `Asset` vollständig unberührt, wird aber bei Hard-Delete des `Asset` physisch mitgelöscht | Solange ein Asset potenziell wieder relevant werden könnte, bleibt seine Historie erhalten; erst die endgültige Entscheidung nimmt auch die Historie mit | `Journal` bei Component-Soft-Delete filtern/verstecken (verliert Nachvollziehbarkeit rückblickend, genau das, was Journal leisten soll) |
+| 45 | `IPurgeableRepository<T>` als generisches Interface für echtes Hard-Delete, getrennt von `IWriteRepository<T>` | Hard-Delete ist ein bewusst seltener, geschützter Sonderfall – eigenes Interface verhindert versehentliche Verwendung im normalen CRUD-Fluss | Hard-Delete-Methode direkt in `IWriteRepository<T>` (zu leicht versehentlich aufrufbar) |
+| 46 | Papierkorb (Restore/endgültiges Löschen soft-gelöschter Elemente) explizit auf später verschoben, nur grob skizziert (8.15) | Kein aktueller Bedarf für die erste Version; Soft-Delete allein deckt den Kernwunsch „Daten bleiben erhalten" bereits ab | Sofortige volle Umsetzung inkl. UI (Aufwand vor erstem nutzbaren Release, ohne nachgewiesenen Bedarf) |
+| 47 | Auth: Microsoft Entra External ID statt Keycloak | Kein selbst zu betreibender Server nötig – vermeidet den laufenden Wartungsaufwand (Updates, Patches, Betrieb) eines self-hosted Keycloak-Containers für ein Solo-Projekt | Keycloak (ursprüngliche Wahl, self-hosted, volle Datenhoheit, aber eigener Wartungsaufwand) |
 
 ---
 
@@ -908,6 +1145,9 @@ Qualität
 | `AssetRelationship` erlaubt auch Component↔Component | Größere Kombinationsvielfalt als ursprünglich angedacht – potenziell unübersichtliche Beziehungsnetze bei vielen Einträgen | Bewusst in Kauf genommen (ADR #16); bei Bedarf später UI-seitig filtern/visualisieren, keine Domain-Änderung nötig |
 | Mehrpunktige/strukturierte Spec-Werte (z. B. Fan-Kurven) nur als Freitext | Nicht auswertbar/nicht abfragbar über JSONB-Operatoren | Bewusst vertagt (ADR #27/#28); bei echtem Bedarf strukturiertes Format nachrüsten |
 | Blazor-WASM-Ladezeit (.NET-Laufzeit im Browser) | Höheres initiales Ladegewicht als bei einer SPA – relevant für die authentifizierte Haupt-UI | Bewusst in Kauf genommen (ADR #34): betrifft nur die Haupt-App (einmalig, du bist ohnehin eingeloggt), nicht die ShareLink-Ausgabe (läuft serverseitig über die Api, siehe 6.4) |
+| `Attachment`/`AssetRelationship` bei Asset-Hard-Delete nicht entschieden | Könnten nach einem Hard-Delete auf ein nicht mehr existierendes Asset verweisen | Bewusst offen (8.14) – vor erster `HardDeleteAsset`-Implementierung nachholen |
+| Microsoft Entra External ID statt Keycloak: Nutzerdaten bei Microsoft (US-Anbieter) statt self-hosted | Widerspricht der bei der Lizenzwahl (AGPL) gezeigten Präferenz für Datenhoheit/Unabhängigkeit; DSGVO-Verarbeitungsvertrag nötig | Bewusster Trade-off (ADR #47): kein eigener Wartungsaufwand für einen self-hosted Auth-Server gegen geringere Datenhoheit abgewogen; DPA/SCC mit Microsoft prüfen |
+| Hard-Delete unwiderruflich, aber (noch) kein Papierkorb als Sicherheitsnetz davor | Versehentlicher Hard-Delete nicht rückgängig machbar | Bewusst vertagt (ADR #46); bis dahin `HardDeleteAsset` nur mit expliziter Bestätigung/Warnung in der UI anbieten |
 | Einzelentwickler | Bus-Faktor 1 | Architektur konventionell/dokumentiert halten (arc42, AGENTS.md, my-voice.md) |
 
 ---
@@ -919,21 +1159,23 @@ Qualität
 | **Bubble** | Themenbereich/Kategorie, dem Assets zugeordnet werden |
 | **Asset** | Konkreter Gegenstand, Aggregate Root im Inventory-Kontext, trägt Specs direkt oder über Components |
 | **Component** | Bauteil eines Assets, selbstreferenzierend, trägt ebenfalls Specs |
-| **Spec** | Einzelne Spezifikation (Key/Value/Unit), an Asset oder Component, persistiert als JSONB. `IsCustom` (abgeleitet aus `TemplateId is null`) unterscheidet Standard- von Ad-hoc-Specs |
+| **Spec** | Einzelne Spezifikation (Key/Value/ValueType), an Asset oder Component, persistiert als JSONB. `IsCustom` (abgeleitet aus `TemplateId is null`) unterscheidet Standard- von Ad-hoc-Specs |
 | **IHasSpecs** | Gemeinsame Schnittstelle von `Asset` und `Component` für das Tragen von Specs (Namensmuster analog `IHasDisplayName`) |
 | **Ownership** | ValueObject für Anschaffungsstatus (`Owned`, `Planning`, `Wishlist`), auf Asset- und Component-Ebene |
 | **LifecycleStatus** | ValueObject für Betriebszustand (`Active`, `InRepair`, `Sold`, `Disposed`), unabhängig von `Ownership`, auf Asset- und Component-Ebene |
 | **Location** | ValueObject für den Standort eines Assets (Freitext-Label, optional Koordinaten), nur auf Asset-Ebene |
 | **AssetIdentity** | ValueObject für reale Identität (Seriennummer, Asset-Tag) |
 | **Unit** | Validierendes ValueObject für Maßeinheiten (offene Wertemenge, kein Enum) |
-| **SpecDataType** | ValueObject für den erlaubten Werttyp eines SpecTemplate (`string`, `number`, `boolean`, `date`) – geschlossene Wertemenge, anders als `Unit` |
+| **SpecDataType** | ValueObject für den erlaubten Werttyp eines `Spec` oder `SpecTemplate` (`string`, `number`, `boolean`, `date`) – geschlossene Wertemenge, anders als `Unit`. Teil von `SpecValueType` |
+| **SpecValueType** | ValueObject, bündelt `SpecDataType` + `Unit`; an `Spec` als Snapshot aus `SpecTemplate.DefaultValueType` kopiert, danach unabhängig veränderbar |
+| **TemplateSnapshotAt** | Zeitstempel an `Asset`, wann zuletzt mit dem Template-Baum abgeglichen – Basis für „Update verfügbar"-Erkennung (8.12) |
 | **PurchaseLink** | Optionaler Shop-/Affiliate-Link an Asset/Component |
 | **Journal** | Aggregat für Freitext-/Messwert-Verlauf zu einem Asset/Component (z. B. Werkstatt-Ergebnisse) |
 | **JournalEntry** | Einzelner Eintrag im Journal (Kategorie, Notizen, Messwerte, Zeitpunkt) |
 | **Measurement** | ValueObject für einen einzelnen Messwert innerhalb eines JournalEntry |
 | **Attachment** | Aggregat für eine Datei-Referenz (Foto, Handbuch, Rechnung) an Asset-, Component- oder Spec-Ebene; Datei selbst liegt im Blob-Storage |
 | **ShareLink** | Zeitlich befristeter, formatspezifischer Freigabelink für ein Asset |
-| **AssetTemplate** | Wiederverwendbare Vorlage für eine Asset-Art, Aggregate Root im Templates-Kontext |
+| **AssetTemplate** | Wiederverwendbare Vorlage für eine Asset-Art, Aggregate Root im Templates-Kontext. `OwnerUserId` immer gesetzt (Systemvorlagen: fiktive UserId), `IsPublic` steuert unabhängig davon die Sichtbarkeit für andere Nutzer |
 | **ComponentTemplate** | Vorlage für ein Component, selbstreferenzierend |
 | **SpecTemplate** | Vorlage für eine Spec (Datentyp, Einheit, Pflichtfeld) |
 | **Bounded Context Inventory** | Fachlicher Kontext für aktuelle Bestände |
@@ -943,4 +1185,6 @@ Qualität
 | **IHasDescription** | Gemeinsame Schnittstelle für ein dauerhaftes Freitextfeld, implementiert von `Bubble`, `Asset`, `Component`, `Spec`, `AssetTemplate`, `ComponentTemplate`, `SpecTemplate` |
 | **EntityBase** | Gemeinsame Basisklasse in `SharedKernel`, von der `AggregateRoot<TId>` und `Entity<TId>` ableiten; trägt `AuditInfo` automatisch für jedes Entity |
 | **AuditInfo** | ValueObject für Erstellung/Änderung/Löschung (je Zeitpunkt + `UserId`), inkl. Soft-Delete (`IsDeleted`, abgeleitet aus `DeletedAt`) |
-| **UserId** | ValueObject, wrapt die Entra-Subject-ID; kein eigenes User-Aggregat im Domänenmodell |
+| **UserId** | ValueObject, wrapt die Entra-Subject-ID (Microsoft Entra External ID); kein eigenes User-Aggregat im Domänenmodell |
+| **IPurgeableRepository** | Generisches Interface für echtes Hard-Delete (`PurgeAsync`), getrennt von `IWriteRepository` – bewusst seltener, geschützter Sonderfall |
+| **Papierkorb** *(geplant)* | Wiederherstellen/endgültiges Löschen soft-gelöschter Elemente über `Restore()`, siehe 8.15 |

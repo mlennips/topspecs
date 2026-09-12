@@ -11,7 +11,7 @@
     <MudDrawer @bind-Open="DrawerState.IsOpen"
                Elevation="0"
                ClipMode="@DrawerClipMode.Always"
-               Breakpoint="Breakpoint.None"
+               Breakpoint="@Breakpoint.None"
                Variant="@_drawerVariant"
                OverlayAutoClose="true"
                Overlay
@@ -38,7 +38,7 @@
 
     MudBlazor.Services.ResizeOptions? IBrowserViewportObserver.ResizeOptions { get; } = new()
     {
-        ReportRate = 250,
+        ReportRate = 500,
         NotifyOnBreakpointOnly = true
     };
 
@@ -59,7 +59,8 @@
     private async Task HandleAuthenticationStateChangedAsync(Task<AuthenticationState> task)
     {
         var state = await task;
-        ApplyAuthenticationState(state);
+        ApplyAuthenticationState(state); 
+        await InvokeAsync(StateHasChanged);
     }
 
     private void ApplyAuthenticationState(AuthenticationState state)

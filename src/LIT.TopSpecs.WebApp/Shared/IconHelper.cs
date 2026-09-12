@@ -21,6 +21,24 @@ public enum IconVariant
 /// </summary>
 public static class IconHelper
 {
+    public static string Inventory(IconVariant variant = IconVariant.Filled) => variant switch
+    {
+        IconVariant.Outlined => Icons.Material.Outlined.Inventory,
+        IconVariant.Rounded => Icons.Material.Rounded.Inventory,
+        IconVariant.Sharp => Icons.Material.Sharp.Inventory,
+        IconVariant.TwoTone => Icons.Material.TwoTone.Inventory,
+        _ => Icons.Material.Filled.Inventory,
+    };
+
+    public static string Topic(IconVariant variant = IconVariant.Filled) => variant switch
+    {
+        IconVariant.Outlined => Icons.Material.Outlined.BubbleChart,
+        IconVariant.Rounded => Icons.Material.Rounded.BubbleChart,
+        IconVariant.Sharp => Icons.Material.Sharp.BubbleChart,
+        IconVariant.TwoTone => Icons.Material.TwoTone.BubbleChart,
+        _ => Icons.Material.Filled.BubbleChart,
+    };
+
     public static string Asset(IconVariant variant = IconVariant.Filled) => variant switch
     {
         IconVariant.Outlined => Icons.Material.Outlined.Inventory2,

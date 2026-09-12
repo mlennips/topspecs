@@ -1,19 +1,31 @@
 ﻿<MudNavMenu Class="nav-menu-white" Dense="false">
     <MudNavLink Href="/" Match="NavLinkMatch.All" Icon="@Icons.Material.Outlined.Home">Willkommen</MudNavLink>
+
     <AuthorizeView>
         <Authorized>
             <MudNavLink Href="/dashboard" Match="NavLinkMatch.All" Icon="@Icons.Material.Outlined.Dashboard">Dashboard</MudNavLink>
+
+            <MudDivider Class="my-2" />
+
+            <MudNavGroup Title="Inventar" Icon="@IconHelper.Inventory(IconVariant.Outlined)" Expanded="true" HideExpandIcon>
+                <MudNavLink Href="/topics" Icon="@IconHelper.Topic(IconVariant.Outlined)">Themen</MudNavLink>
+                <MudNavLink Href="/assets" Icon="@IconHelper.Asset(IconVariant.Outlined)">Gegenstände</MudNavLink>
+            </MudNavGroup>
+
+            <MudDivider Class="my-2" />
+
             <MudNavLink Href="authentication/logout" Match="NavLinkMatch.All" Icon="@Icons.Material.Outlined.Logout">
                 Abmelden
             </MudNavLink>
+            <MudNavLink Href="/kontakt" Match="NavLinkMatch.All" Icon="@Icons.Material.Outlined.ContactSupport">Kontakt</MudNavLink>
         </Authorized>
         <NotAuthorized>
             <MudNavLink Href="authentication/login" Match="NavLinkMatch.All" Icon="@Icons.Material.Outlined.Login">
                 Anmelden
             </MudNavLink>
+            <MudNavLink Href="/kontakt" Match="NavLinkMatch.All" Icon="@Icons.Material.Outlined.ContactSupport">Kontakt</MudNavLink>
         </NotAuthorized>
     </AuthorizeView>
-    <MudNavLink Href="/kontakt" Match="NavLinkMatch.All" Icon="@Icons.Material.Outlined.ContactSupport">Kontakt</MudNavLink>
 </MudNavMenu>
 
 
